@@ -68,7 +68,7 @@ class _RaceHomePageState extends State<RaceHomePage> {
 
   String formatTime(int milliseconds) {
     var secs = milliseconds ~/ 1000;
-    var hundredths = (milliseconds % 100).toString().padLeft(2, '0');
+    var hundredths = ((milliseconds % 1000) ~/ 10).toString().padLeft(2, '0');
     var hours = (secs ~/ 3600).toString().padLeft(2, '0');
     var minutes = ((secs % 3600) ~/ 60).toString().padLeft(2, '0');
     var seconds = (secs % 60).toString().padLeft(2, '0');
