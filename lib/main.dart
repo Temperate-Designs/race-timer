@@ -41,29 +41,26 @@ class Racer {
 class _RaceHomePageState extends State<RaceHomePage> {
   List<Racer> racers = [];
   Stopwatch _stopwatch = new Stopwatch();
-  late Timer _timer;
-
-  @override
-  void initState() {
-    super.initState();
-    _timer = new Timer.periodic(new Duration(milliseconds: 30), (timer) {
-      setState(() {});
-    });
-  }
+  Timer? _timer;
 
   @override
   void dispose() {
-    _timer.cancel();
+    _timer?.cancel();
     super.dispose();
   }
 
   void handleStartStop() {
     if (_stopwatch.isRunning) {
       _stopwatch.stop();
+      _timer?.cancel();
+      setState(() {});
     } else {
       _stopwatch.start();
+      _timer = Timer.periodic(Duration(milliseconds: 30), (timer) {
+        setState(() {});
+      });
+      setState(() {}); // re-render the page
     }
-    setState(() {}); // re-render the page
   }
 
   String formatTime(int milliseconds) {
