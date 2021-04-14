@@ -33,7 +33,8 @@ class RaceHomePage extends StatefulWidget {
 class Racer {
   int bibNumber = -1;
   String name = "";
-  double time = 0.0;
+  int milliseconds = 0;
+  bool isRunning = true;
 
   Racer(this.bibNumber, this.name);
 }
@@ -119,11 +120,31 @@ class _RaceHomePageState extends State<RaceHomePage> {
               itemCount: racers.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text(
-                      'Bib: ${racers[index].bibNumber.toString().padLeft(4, '0')}'),
+                  title: Row(
+                    children: [
+                      Text(
+                          'Bib: ${racers[index].bibNumber.toString().padLeft(4, '0')}',
+                          style: TextStyle(fontSize: 20)),
+                      Padding(padding: EdgeInsets.symmetric(horizontal: 20)),
+                      Text(
+                          formatTime(racers[index].isRunning
+                              ? _stopwatch.elapsedMilliseconds
+                              : racers[index].milliseconds),
+                          style: TextStyle(fontSize: 24)),
+                    ],
+                  ),
                   subtitle: Text(racers[index].name),
-                  trailing: Icon(Icons.alarm_off),
+                  onTap: () {
+                    if (racers[index].isRunning && _stopwatch.isRunning) {
+                      racers[index].isRunning = false;
+                      racers[index].milliseconds =
+                          _stopwatch.elapsedMilliseconds;
+                    }
+                  },
                   dense: true,
+                  tileColor: racers[index].isRunning
+                      ? Colors.lightGreen
+                      : Colors.blueGrey,
                 );
               },
             ),
