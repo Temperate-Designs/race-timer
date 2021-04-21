@@ -2,6 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+
+List<Racer> racers = [];
 
 void main() {
   runApp(RaceApp());
@@ -17,7 +20,11 @@ class RaceApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: RaceHomePage(title: title),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => RaceHomePage(title: title),
+        '/add-racer': (context) => AddRacerPage(),
+      },
     );
   }
 }
@@ -39,8 +46,53 @@ class Racer {
   Racer(this.bibNumber, this.name);
 }
 
+class AddRacerPage extends StatelessWidget {
+  final NameController = TextEditingController();
+  final BibController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Add Racer'),
+        actions: [
+          FloatingActionButton.extended(
+            label: Text('Save'),
+            onPressed: () {
+              if (NameController.text.isNotEmpty &&
+                  BibController.text.isNotEmpty) {
+                racers.add(new Racer(
+                    int.parse(BibController.text), NameController.text));
+                Navigator.pop(context);
+              }
+            },
+            tooltip: 'Save Racer',
+            icon: Icon(Icons.save),
+          ),
+        ],
+      ),
+      body: Container(
+        margin: EdgeInsets.all(20),
+        child: Column(
+          children: [
+            TextField(
+              decoration: const InputDecoration(hintText: "Racer's Name"),
+              controller: NameController,
+            ),
+            Padding(padding: EdgeInsets.all(20)),
+            TextField(
+              decoration: const InputDecoration(hintText: 'Bib Number'),
+              controller: BibController,
+              keyboardType: TextInputType.number,
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _RaceHomePageState extends State<RaceHomePage> {
-  List<Racer> racers = [];
   Stopwatch _stopwatch = new Stopwatch();
   Timer? _timer;
 
@@ -48,6 +100,15 @@ class _RaceHomePageState extends State<RaceHomePage> {
   void dispose() {
     _timer?.cancel();
     super.dispose();
+  }
+
+  void arrangeRacers() {
+    List<Racer> stillRunning =
+        List.from(racers.where((racer) => racer.isRunning));
+    stillRunning.sort((a, b) => a.bibNumber.compareTo(b.bibNumber));
+    List<Racer> finished = List.from(racers.where((racer) => !racer.isRunning));
+    finished.sort((a, b) => a.bibNumber.compareTo(b.bibNumber));
+    racers = stillRunning + finished;
   }
 
   void handleStartStop() {
@@ -78,10 +139,17 @@ class _RaceHomePageState extends State<RaceHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title!),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () {
+              Future pushedName = Navigator.pushNamed(context, '/add-racer');
+              pushedName.then((_) => setState(() {}));
+            },
+          )
+        ],
       ),
-      body: Center(
-          child: Column(
-        mainAxisSize: MainAxisSize.min,
+      body: Column(
         children: [
           Row(
             children: [
@@ -95,12 +163,16 @@ class _RaceHomePageState extends State<RaceHomePage> {
                           fontSize: 42, fontWeight: FontWeight.bold))),
               Align(
                 alignment: Alignment.centerRight,
-                child: FloatingActionButton(
-                    tooltip: 'Start Race',
-                    child: _stopwatch.isRunning
-                        ? Icon(Icons.stop_outlined)
-                        : Icon(Icons.play_arrow_outlined),
-                    onPressed: handleStartStop),
+                child: _stopwatch.isRunning
+                    ? FloatingActionButton(
+                        tooltip: 'End Race',
+                        backgroundColor: Colors.red,
+                        child: Icon(Icons.stop_outlined),
+                        onPressed: handleStartStop)
+                    : FloatingActionButton(
+                        tooltip: 'Start Race',
+                        child: Icon(Icons.play_arrow_outlined),
+                        onPressed: handleStartStop),
               ),
             ],
           ),
@@ -139,6 +211,7 @@ class _RaceHomePageState extends State<RaceHomePage> {
                       racers[index].isRunning = false;
                       racers[index].milliseconds =
                           _stopwatch.elapsedMilliseconds;
+                      arrangeRacers();
                     }
                   },
                   dense: true,
@@ -148,24 +221,9 @@ class _RaceHomePageState extends State<RaceHomePage> {
                 );
               },
             ),
-          )
+          ),
         ],
-      )),
-      bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        child: Container(height: 50.0),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          setState(() {
-            racers.add(new Racer(racers.length + 1, ""));
-          });
-        },
-        tooltip: 'Add Racer',
-        label: Text('Add Racer'),
-        icon: const Icon(Icons.add),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }
