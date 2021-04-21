@@ -47,8 +47,8 @@ class Racer {
 }
 
 class AddRacerPage extends StatelessWidget {
-  final NameController = TextEditingController();
-  final BibController = TextEditingController();
+  final nameController = TextEditingController();
+  final bibController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -59,10 +59,10 @@ class AddRacerPage extends StatelessWidget {
           FloatingActionButton.extended(
             label: Text('Save'),
             onPressed: () {
-              if (NameController.text.isNotEmpty &&
-                  BibController.text.isNotEmpty) {
+              if (nameController.text.isNotEmpty &&
+                  bibController.text.isNotEmpty) {
                 racers.add(new Racer(
-                    int.parse(BibController.text), NameController.text));
+                    int.parse(bibController.text), nameController.text));
                 Navigator.pop(context);
               }
             },
@@ -77,12 +77,12 @@ class AddRacerPage extends StatelessWidget {
           children: [
             TextField(
               decoration: const InputDecoration(hintText: "Racer's Name"),
-              controller: NameController,
+              controller: nameController,
             ),
             Padding(padding: EdgeInsets.all(20)),
             TextField(
               decoration: const InputDecoration(hintText: 'Bib Number'),
-              controller: BibController,
+              controller: bibController,
               keyboardType: TextInputType.number,
             )
           ],
@@ -140,6 +140,15 @@ class _RaceHomePageState extends State<RaceHomePage> {
       appBar: AppBar(
         title: Text(widget.title!),
         actions: [
+          IconButton(
+            icon: Icon(Icons.clear),
+            onPressed: () {
+              racers = [];
+              _stopwatch = new Stopwatch();
+              _timer?.cancel();
+              setState(() {});
+            },
+          ),
           IconButton(
             icon: Icon(Icons.add),
             onPressed: () {
