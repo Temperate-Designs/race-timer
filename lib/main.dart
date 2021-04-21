@@ -196,6 +196,7 @@ class _RaceHomePageState extends State<RaceHomePage> {
                       color: Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.bold))),
+          Divider(thickness: 2),
           Expanded(
             child: ListView.builder(
               itemCount: racers.length,
