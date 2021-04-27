@@ -1,10 +1,73 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+const List<String> firstNames = [
+  'good',
+  'new',
+  'first',
+  'last',
+  'long',
+  'great',
+  'little',
+  'own',
+  'other',
+  'old',
+  'right',
+  'big',
+  'high',
+  'different',
+  'small',
+  'large',
+  'next',
+  'early',
+  'young',
+  'important',
+  'few',
+  'public',
+  'bad',
+  'same',
+  'able',
+];
+
+const List<String> lastNames = [
+  'time',
+  'person',
+  'year',
+  'way',
+  'day',
+  'thing',
+  'man',
+  'world',
+  'life',
+  'hand',
+  'part',
+  'child',
+  'eye',
+  'woman',
+  'place',
+  'work',
+  'week',
+  'case',
+  'point',
+  'government',
+  'company',
+  'number',
+  'group',
+  'problem',
+  'fact',
+];
+
 List<Racer> racers = [];
+
+extension StringExtension on String {
+  String capitalize() {
+    return "${this[0].toUpperCase()}${this.substring(1)}";
+  }
+}
 
 void main() {
   runApp(RaceApp());
@@ -50,6 +113,8 @@ class AddRacerPage extends StatelessWidget {
   final nameController = TextEditingController();
   final bibController = TextEditingController();
 
+  final randomizer = Random();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,11 +124,24 @@ class AddRacerPage extends StatelessWidget {
           FloatingActionButton.extended(
             label: Text('Save'),
             onPressed: () {
-              if (nameController.text.isNotEmpty &&
-                  bibController.text.isNotEmpty) {
-                racers.add(new Racer(
-                    int.parse(bibController.text), nameController.text));
+              String name = nameController.text;
+              if (name.isEmpty) {
+                name = firstNames[randomizer.nextInt(firstNames.length)]
+                        .capitalize() +
+                    ' ' +
+                    lastNames[randomizer.nextInt(lastNames.length)]
+                        .capitalize();
+              }
+              int? bibNumber = int.tryParse(bibController.text);
+              if (bibNumber != null && bibNumber > 0) {
+                racers.add(new Racer(bibNumber, name));
                 Navigator.pop(context);
+              } else {
+                showDialog(
+                    context: context,
+                    builder: (context) => SimpleDialog(
+                        title: const Text('Please enter a valid bib number'),
+                        titlePadding: EdgeInsets.all(32)));
               }
             },
             tooltip: 'Save Racer',
@@ -160,30 +238,35 @@ class _RaceHomePageState extends State<RaceHomePage> {
       ),
       body: Column(
         children: [
-          Row(
-            children: [
-              Container(
-                  margin: const EdgeInsets.all(16),
-                  padding: const EdgeInsets.all(10),
-                  decoration:
-                      BoxDecoration(color: CupertinoColors.lightBackgroundGray),
-                  child: Text(formatTime(_stopwatch.elapsedMilliseconds),
-                      style: TextStyle(
-                          fontSize: 42, fontWeight: FontWeight.bold))),
-              Align(
-                alignment: Alignment.centerRight,
-                child: _stopwatch.isRunning
-                    ? FloatingActionButton(
-                        tooltip: 'End Race',
-                        backgroundColor: Colors.red,
-                        child: Icon(Icons.stop_outlined),
-                        onPressed: handleStartStop)
-                    : FloatingActionButton(
-                        tooltip: 'Start Race',
-                        child: Icon(Icons.play_arrow_outlined),
-                        onPressed: handleStartStop),
-              ),
-            ],
+          Center(
+            child: Row(
+              children: [
+                Align(
+                  alignment: Alignment.center,
+                  child: Container(
+                      margin: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                          color: CupertinoColors.lightBackgroundGray),
+                      child: Text(formatTime(_stopwatch.elapsedMilliseconds),
+                          style: TextStyle(
+                              fontSize: 42, fontWeight: FontWeight.bold))),
+                ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: _stopwatch.isRunning
+                      ? FloatingActionButton(
+                          tooltip: 'End Race',
+                          backgroundColor: Colors.red,
+                          child: Icon(Icons.stop_outlined),
+                          onPressed: handleStartStop)
+                      : FloatingActionButton(
+                          tooltip: 'Start Race',
+                          child: Icon(Icons.play_arrow_outlined),
+                          onPressed: handleStartStop),
+                ),
+              ],
+            ),
           ),
           Container(
               margin: const EdgeInsets.all(6.0),
