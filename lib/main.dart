@@ -238,35 +238,28 @@ class _RaceHomePageState extends State<RaceHomePage> {
       ),
       body: Column(
         children: [
-          Center(
-            child: Row(
-              children: [
-                Align(
-                  alignment: Alignment.center,
-                  child: Container(
-                      margin: const EdgeInsets.all(16),
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                          color: CupertinoColors.lightBackgroundGray),
-                      child: Text(formatTime(_stopwatch.elapsedMilliseconds),
-                          style: TextStyle(
-                              fontSize: 42, fontWeight: FontWeight.bold))),
-                ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: _stopwatch.isRunning
-                      ? FloatingActionButton(
-                          tooltip: 'End Race',
-                          backgroundColor: Colors.red,
-                          child: Icon(Icons.stop_outlined),
-                          onPressed: handleStartStop)
-                      : FloatingActionButton(
-                          tooltip: 'Start Race',
-                          child: Icon(Icons.play_arrow_outlined),
-                          onPressed: handleStartStop),
-                ),
-              ],
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                  margin: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                      color: CupertinoColors.lightBackgroundGray),
+                  child: Text(formatTime(_stopwatch.elapsedMilliseconds),
+                      style: TextStyle(
+                          fontSize: 42, fontWeight: FontWeight.bold))),
+              _stopwatch.isRunning
+                  ? FloatingActionButton(
+                      tooltip: 'End Race',
+                      backgroundColor: Colors.red,
+                      child: Icon(Icons.stop_outlined),
+                      onPressed: handleStartStop)
+                  : FloatingActionButton(
+                      tooltip: 'Start Race',
+                      child: Icon(Icons.play_arrow_outlined),
+                      onPressed: handleStartStop),
+            ],
           ),
           Container(
               margin: const EdgeInsets.all(6.0),
