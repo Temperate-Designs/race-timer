@@ -69,16 +69,18 @@ extension StringExtension on String {
 
 class Racer {
   int bibNumber = -1;
+  int group = 1;
   String name = "";
   int milliseconds = 0;
   bool isRunning = true;
 
-  Racer(this.bibNumber, this.name);
+  Racer(this.bibNumber, this.group, this.name);
 }
 
 class AddRacerPage extends StatelessWidget {
   final nameController = TextEditingController();
   final bibController = TextEditingController();
+  final groupController = TextEditingController();
 
   final randomizer = Random();
 
@@ -100,8 +102,12 @@ class AddRacerPage extends StatelessWidget {
                         .capitalize();
               }
               int? bibNumber = int.tryParse(bibController.text);
+              int? groupNumber = int.tryParse(groupController.text);
+              if (groupNumber == null) {
+                groupNumber = 1;
+              }
               if (bibNumber != null && bibNumber > 0) {
-                racers.add(new Racer(bibNumber, name));
+                racers.add(new Racer(bibNumber, groupNumber, name));
                 Navigator.pop(context);
               } else {
                 showDialog(
@@ -128,6 +134,12 @@ class AddRacerPage extends StatelessWidget {
             TextField(
               decoration: const InputDecoration(hintText: 'Bib Number'),
               controller: bibController,
+              keyboardType: TextInputType.number,
+            ),
+            Padding(padding: EdgeInsets.all(20)),
+            TextField(
+              decoration: const InputDecoration(hintText: 'Group Number'),
+              controller: groupController,
               keyboardType: TextInputType.number,
             )
           ],
