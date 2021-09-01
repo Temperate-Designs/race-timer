@@ -77,6 +77,22 @@ class Racer {
   Racer(this.bibNumber, this.group, this.name);
 }
 
+int maxBibNumber() {
+  int highestNumber = 0;
+  racers.forEach((element) {
+    highestNumber = max(highestNumber, element.bibNumber);
+  });
+  return highestNumber;
+}
+
+int maxGroupNumber() {
+  int highestNumber = 1;
+  racers.forEach((element) {
+    highestNumber = max(highestNumber, element.group);
+  });
+  return highestNumber;
+}
+
 class AddRacerPage extends StatelessWidget {
   final nameController = TextEditingController();
   final bibController = TextEditingController();
@@ -103,19 +119,15 @@ class AddRacerPage extends StatelessWidget {
               }
               int? bibNumber = int.tryParse(bibController.text);
               int? groupNumber = int.tryParse(groupController.text);
-              if (groupNumber == null) {
-                groupNumber = 1;
+              if (groupNumber == null || groupNumber < 1) {
+                groupNumber = maxGroupNumber();
               }
-              if (bibNumber != null && bibNumber > 0) {
-                racers.add(new Racer(bibNumber, groupNumber, name));
-                Navigator.pop(context);
-              } else {
-                showDialog(
-                    context: context,
-                    builder: (context) => SimpleDialog(
-                        title: const Text('Please enter a valid bib number'),
-                        titlePadding: EdgeInsets.all(32)));
+              if (bibNumber == null || bibNumber < 1) {
+                bibNumber = maxBibNumber() + 1;
               }
+
+              racers.add(new Racer(bibNumber, groupNumber, name));
+              Navigator.pop(context);
             },
             tooltip: 'Save Racer',
             icon: Icon(Icons.save),
@@ -123,25 +135,37 @@ class AddRacerPage extends StatelessWidget {
         ],
       ),
       body: Container(
-        margin: EdgeInsets.all(20),
-        child: Column(
+        child: Table(
+          defaultColumnWidth: IntrinsicColumnWidth(),
           children: [
-            TextField(
-              decoration: const InputDecoration(hintText: "Racer's Name"),
-              controller: nameController,
+            TableRow(
+              children: [
+                const Text("Racer's Name"),
+                TextField(
+                  controller: nameController,
+                ),
+              ],
             ),
-            Padding(padding: EdgeInsets.all(20)),
-            TextField(
-              decoration: const InputDecoration(hintText: 'Bib Number'),
-              controller: bibController,
-              keyboardType: TextInputType.number,
+            TableRow(
+              children: [
+                const Text("Bib Number"),
+                TextField(
+                  decoration: InputDecoration(
+                      hintText: (maxBibNumber() + 1).toString()),
+                  controller: bibController,
+                  keyboardType: TextInputType.number,
+                ),
+              ],
             ),
-            Padding(padding: EdgeInsets.all(20)),
-            TextField(
-              decoration: const InputDecoration(hintText: 'Group Number'),
-              controller: groupController,
-              keyboardType: TextInputType.number,
-            )
+            TableRow(children: [
+              const Text("Group Number"),
+              TextField(
+                decoration:
+                    InputDecoration(hintText: maxGroupNumber().toString()),
+                controller: groupController,
+                keyboardType: TextInputType.number,
+              ),
+            ])
           ],
         ),
       ),
