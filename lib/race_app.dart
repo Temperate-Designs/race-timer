@@ -146,27 +146,24 @@ class _RaceHomePageState extends State<RaceHomePage> {
               itemCount: racers.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Column(
+                  title: Table(
                     children: [
-                      Row(
+                      TableRow(
                         children: [
                           Text(
                               'Bib: ${racers[index].bibNumber.toString().padLeft(4, '0')}',
                               style: TextStyle(fontSize: 20)),
-                          Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 20)),
                           Text(
                               formatTime(racers[index].isRunning
                                   ? _stopwatch.elapsedMilliseconds
                                   : racers[index].milliseconds),
-                              style: TextStyle(fontSize: 24)),
+                              style: TextStyle(fontSize: 20)),
                         ],
                       ),
-                      Row(children: [
+                      TableRow(children: [
                         Text(
                             'Group: ${racers[index].group.toString().padLeft(2, '0')}',
                             style: TextStyle(fontSize: 20)),
-                        Padding(padding: EdgeInsets.symmetric(horizontal: 20)),
                         Text(racers[index].name, style: TextStyle(fontSize: 20))
                       ]),
                     ],
