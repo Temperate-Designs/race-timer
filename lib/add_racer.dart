@@ -147,9 +147,11 @@ class AddRacerPage extends StatelessWidget {
                       child: Padding(
                           padding: EdgeInsets.all(8.0),
                           child: const Text("Racer's Name"))),
-                  TextField(
-                    decoration: InputDecoration(border: OutlineInputBorder()),
-                    controller: nameController,
+                  Container(
+                    width: 200.0,
+                    child: TextField(
+                      controller: nameController,
+                    ),
                   ),
                 ],
               ),
@@ -162,10 +164,7 @@ class AddRacerPage extends StatelessWidget {
                         child: const Text("Bib Number"),
                       )),
                   TextField(
-                    decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        isDense: true,
-                        hintText: (maxBibNumber() + 1).toString()),
+                    decoration: InputDecoration(hintText: (maxBibNumber() + 1).toString()),
                     controller: bibController,
                     keyboardType: TextInputType.number,
                   ),
@@ -179,9 +178,7 @@ class AddRacerPage extends StatelessWidget {
                       child: const Text("Group Number"),
                     )),
                 TextField(
-                  decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: maxGroupNumber().toString()),
+                  decoration: InputDecoration(hintText: maxGroupNumber().toString()),
                   controller: groupController,
                   keyboardType: TextInputType.number,
                 ),
