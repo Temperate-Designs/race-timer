@@ -51,17 +51,23 @@ class _RaceHomePageState extends State<RaceHomePage> {
     racers = stillRunning + finished;
   }
 
+  List<Racer> stillRunning() {
+    return List.from(racers.where((racer) => racer.isRunning));
+  }
+
   void handleStartStop() {
     if (_stopwatch.isRunning) {
       _stopwatch.stop();
       _timer?.cancel();
       setState(() {});
     } else {
-      _stopwatch.start();
-      _timer = Timer.periodic(Duration(milliseconds: 30), (timer) {
-        setState(() {});
-      });
-      setState(() {}); // re-render the page
+      if (stillRunning().length > 0) {
+        _stopwatch.start();
+        _timer = Timer.periodic(Duration(milliseconds: 30), (timer) {
+          setState(() {});
+        });
+        setState(() {}); // re-render the page
+      }
     }
   }
 
@@ -171,6 +177,9 @@ class _RaceHomePageState extends State<RaceHomePage> {
                       racers[index].milliseconds =
                           _stopwatch.elapsedMilliseconds;
                       arrangeRacers();
+                    }
+                    if (stillRunning().length == 0) {
+                      handleStartStop();
                     }
                   },
                   dense: true,
