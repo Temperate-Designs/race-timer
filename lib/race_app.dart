@@ -197,8 +197,12 @@ class _RaceHomePageState extends State<RaceHomePage> {
                   },
                   dense: true,
                   tileColor: racers[index].isRunning
-                      ? Colors.lightGreen
-                      : Colors.blueGrey,
+                      ? (racers[index].group % 2 == 0
+                          ? Colors.lightGreen
+                          : Colors.green)
+                      : (racers[index].group % 2 == 0
+                          ? Colors.blueGrey
+                          : Colors.grey),
                 );
               },
             ),
