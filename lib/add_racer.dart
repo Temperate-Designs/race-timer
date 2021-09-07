@@ -74,6 +74,14 @@ class Racer {
   int milliseconds = 0;
   bool isRunning = true;
 
+  final randomizer = Random();
+
+  Racer.withoutName(this.bibNumber, this.group) {
+    this.name = firstNames[randomizer.nextInt(firstNames.length)].capitalize() +
+        ' ' +
+        lastNames[randomizer.nextInt(lastNames.length)].capitalize();
+  }
+
   Racer(this.bibNumber, this.group, this.name);
 }
 
@@ -98,8 +106,6 @@ class AddRacerPage extends StatelessWidget {
   final bibController = TextEditingController();
   final groupController = TextEditingController();
 
-  final randomizer = Random();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -110,13 +116,6 @@ class AddRacerPage extends StatelessWidget {
             label: Text('Save'),
             onPressed: () {
               String name = nameController.text;
-              if (name.isEmpty) {
-                name = firstNames[randomizer.nextInt(firstNames.length)]
-                        .capitalize() +
-                    ' ' +
-                    lastNames[randomizer.nextInt(lastNames.length)]
-                        .capitalize();
-              }
               int? bibNumber = int.tryParse(bibController.text);
               int? groupNumber = int.tryParse(groupController.text);
               if (groupNumber == null || groupNumber < 1) {
@@ -125,8 +124,11 @@ class AddRacerPage extends StatelessWidget {
               if (bibNumber == null || bibNumber < 1) {
                 bibNumber = maxBibNumber() + 1;
               }
-
-              racers.add(new Racer(bibNumber, groupNumber, name));
+              if (name.isEmpty) {
+                racers.add(new Racer.withoutName(bibNumber, groupNumber));
+              } else {
+                racers.add(new Racer(bibNumber, groupNumber, name));
+              }
               Navigator.pop(context);
             },
             tooltip: 'Save Racer',
@@ -164,7 +166,8 @@ class AddRacerPage extends StatelessWidget {
                         child: const Text("Bib Number"),
                       )),
                   TextField(
-                    decoration: InputDecoration(hintText: (maxBibNumber() + 1).toString()),
+                    decoration: InputDecoration(
+                        hintText: (maxBibNumber() + 1).toString()),
                     controller: bibController,
                     keyboardType: TextInputType.number,
                   ),
@@ -178,7 +181,8 @@ class AddRacerPage extends StatelessWidget {
                       child: const Text("Group Number"),
                     )),
                 TextField(
-                  decoration: InputDecoration(hintText: maxGroupNumber().toString()),
+                  decoration:
+                      InputDecoration(hintText: maxGroupNumber().toString()),
                   controller: groupController,
                   keyboardType: TextInputType.number,
                 ),
