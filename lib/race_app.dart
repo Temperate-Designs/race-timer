@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import "add_racer.dart";
@@ -10,6 +11,21 @@ class RaceApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (kDebugMode) {
+      racers = [
+        Racer.withoutName(1, 1),
+        Racer.withoutName(2, 1),
+        Racer.withoutName(3, 1),
+        Racer.withoutName(4, 2),
+        Racer.withoutName(5, 2),
+        Racer.withoutName(6, 3),
+        Racer.withoutName(7, 3),
+        Racer.withoutName(8, 4),
+        Racer.withoutName(9, 4),
+        Racer.withoutName(10, 5),
+      ];
+    }
+
     return MaterialApp(
       title: title,
       theme: ThemeData(
