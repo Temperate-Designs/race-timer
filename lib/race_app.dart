@@ -23,6 +23,10 @@ class RaceApp extends StatelessWidget {
         Racer.withoutName(8, 4),
         Racer.withoutName(9, 4),
         Racer.withoutName(10, 5),
+        Racer.withoutName(11, 5),
+        Racer.withoutName(12, 6),
+        Racer.withoutName(13, 6),
+        Racer.withoutName(14, 6),
       ];
     }
 
