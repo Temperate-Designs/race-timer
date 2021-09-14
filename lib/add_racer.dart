@@ -87,17 +87,17 @@ class Racer {
 
 int maxBibNumber() {
   int highestNumber = 0;
-  racers.forEach((element) {
+  for (var element in racers) {
     highestNumber = max(highestNumber, element.bibNumber);
-  });
+  }
   return highestNumber;
 }
 
 int maxGroupNumber() {
   int highestNumber = 1;
-  racers.forEach((element) {
+  for (var element in racers) {
     highestNumber = max(highestNumber, element.group);
-  });
+  }
   return highestNumber;
 }
 
@@ -106,14 +106,16 @@ class AddRacerPage extends StatelessWidget {
   final bibController = TextEditingController();
   final groupController = TextEditingController();
 
+  AddRacerPage({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Racer'),
+        title: const Text('Add Racer'),
         actions: [
           FloatingActionButton.extended(
-            label: Text('Save'),
+            label: const Text('Save'),
             onPressed: () {
               String name = nameController.text;
               int? bibNumber = int.tryParse(bibController.text);
@@ -125,14 +127,14 @@ class AddRacerPage extends StatelessWidget {
                 bibNumber = maxBibNumber() + 1;
               }
               if (name.isEmpty) {
-                racers.add(new Racer.withoutName(bibNumber, groupNumber));
+                racers.add(Racer.withoutName(bibNumber, groupNumber));
               } else {
-                racers.add(new Racer(bibNumber, groupNumber, name));
+                racers.add(Racer(bibNumber, groupNumber, name));
               }
               Navigator.pop(context);
             },
             tooltip: 'Save Racer',
-            icon: Icon(Icons.save),
+            icon: const Icon(Icons.save),
           ),
         ],
       ),
@@ -140,15 +142,15 @@ class AddRacerPage extends StatelessWidget {
         child: Align(
           alignment: Alignment.topCenter,
           child: Table(
-            defaultColumnWidth: IntrinsicColumnWidth(),
+            defaultColumnWidth: const IntrinsicColumnWidth(),
             children: [
               TableRow(
                 children: [
-                  TableCell(
+                  const TableCell(
                       verticalAlignment: TableCellVerticalAlignment.middle,
                       child: Padding(
                           padding: EdgeInsets.all(8.0),
-                          child: const Text("Racer's Name"))),
+                          child: Text("Racer's Name"))),
                   Container(
                     width: 200.0,
                     child: TextField(
@@ -159,11 +161,11 @@ class AddRacerPage extends StatelessWidget {
               ),
               TableRow(
                 children: [
-                  TableCell(
+                  const TableCell(
                       verticalAlignment: TableCellVerticalAlignment.middle,
                       child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: const Text("Bib Number"),
+                        padding: EdgeInsets.all(8.0),
+                        child: Text("Bib Number"),
                       )),
                   TextField(
                     decoration: InputDecoration(
@@ -174,11 +176,11 @@ class AddRacerPage extends StatelessWidget {
                 ],
               ),
               TableRow(children: [
-                TableCell(
+                const TableCell(
                     verticalAlignment: TableCellVerticalAlignment.middle,
                     child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: const Text("Group Number"),
+                      padding: EdgeInsets.all(8.0),
+                      child: Text("Group Number"),
                     )),
                 TextField(
                   decoration:
