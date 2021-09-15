@@ -134,8 +134,8 @@ class _RaceHomePageState extends State<RaceHomePage> {
               Container(
                   margin: const EdgeInsets.all(16),
                   padding: const EdgeInsets.all(10),
-                  decoration:
-                      const BoxDecoration(color: CupertinoColors.lightBackgroundGray),
+                  decoration: const BoxDecoration(
+                      color: CupertinoColors.lightBackgroundGray),
                   child: Text(formatTime(_stopwatch.elapsedMilliseconds),
                       style: const TextStyle(
                           fontSize: 42, fontWeight: FontWeight.bold))),
@@ -168,8 +168,8 @@ class _RaceHomePageState extends State<RaceHomePage> {
               itemCount: racers.length,
               itemBuilder: (context, index) {
                 return Container(
-                  margin: const EdgeInsets.all(6.0),
-                  padding: const EdgeInsets.all(6.0),
+                  margin: const EdgeInsets.all(4.0),
+                  padding: const EdgeInsets.all(4.0),
                   color: racers[index].isRunning
                       ? (racers[index].group % 2 == 0
                           ? Colors.lightGreen
@@ -178,6 +178,8 @@ class _RaceHomePageState extends State<RaceHomePage> {
                           ? Colors.blueGrey
                           : Colors.grey),
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -192,8 +194,10 @@ class _RaceHomePageState extends State<RaceHomePage> {
                               style: const TextStyle(fontSize: 16)),
                         ],
                       ),
-                      const Padding(
-                        padding: EdgeInsets.all(6),
+                      const Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.all(6),
+                        ),
                       ),
                       Text(
                           formatTime(racers[index].isRunning
