@@ -63,7 +63,7 @@ List<Racer> racers = [];
 
 extension StringExtension on String {
   String capitalize() {
-    return "${this[0].toUpperCase()}${this.substring(1)}";
+    return "${this[0].toUpperCase()}${substring(1)}";
   }
 }
 
@@ -77,7 +77,7 @@ class Racer {
   final randomizer = Random();
 
   Racer.withoutName(this.bibNumber, this.group) {
-    this.name = firstNames[randomizer.nextInt(firstNames.length)].capitalize() +
+    name = firstNames[randomizer.nextInt(firstNames.length)].capitalize() +
         ' ' +
         lastNames[randomizer.nextInt(lastNames.length)].capitalize();
   }
