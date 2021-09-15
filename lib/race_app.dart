@@ -9,6 +9,8 @@ import "add_racer.dart";
 class RaceApp extends StatelessWidget {
   final title = 'SWN Race Timer';
 
+  const RaceApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     if (kDebugMode) {
@@ -45,7 +47,7 @@ class RaceApp extends StatelessWidget {
 }
 
 class RaceHomePage extends StatefulWidget {
-  RaceHomePage({Key? key, this.title}) : super(key: key);
+  const RaceHomePage({Key? key, this.title}) : super(key: key);
   final String? title;
 
   @override
@@ -53,7 +55,7 @@ class RaceHomePage extends StatefulWidget {
 }
 
 class _RaceHomePageState extends State<RaceHomePage> {
-  Stopwatch _stopwatch = new Stopwatch();
+  Stopwatch _stopwatch = Stopwatch();
   Timer? _timer;
 
   @override
@@ -81,9 +83,9 @@ class _RaceHomePageState extends State<RaceHomePage> {
       _timer?.cancel();
       setState(() {});
     } else {
-      if (stillRunning().length > 0) {
+      if (stillRunning().isNotEmpty) {
         _stopwatch.start();
-        _timer = Timer.periodic(Duration(milliseconds: 30), (timer) {
+        _timer = Timer.periodic(const Duration(milliseconds: 30), (timer) {
           setState(() {});
         });
         setState(() {}); // re-render the page
@@ -107,16 +109,16 @@ class _RaceHomePageState extends State<RaceHomePage> {
         title: Text(widget.title!),
         actions: [
           IconButton(
-            icon: Icon(Icons.clear),
+            icon: const Icon(Icons.clear),
             onPressed: () {
               racers = [];
-              _stopwatch = new Stopwatch();
+              _stopwatch = Stopwatch();
               _timer?.cancel();
               setState(() {});
             },
           ),
           IconButton(
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
             onPressed: () {
               Future pushedName = Navigator.pushNamed(context, '/add-racer');
               pushedName.then((_) => setState(() {}));
@@ -133,19 +135,19 @@ class _RaceHomePageState extends State<RaceHomePage> {
                   margin: const EdgeInsets.all(16),
                   padding: const EdgeInsets.all(10),
                   decoration:
-                      BoxDecoration(color: CupertinoColors.lightBackgroundGray),
+                      const BoxDecoration(color: CupertinoColors.lightBackgroundGray),
                   child: Text(formatTime(_stopwatch.elapsedMilliseconds),
-                      style: TextStyle(
+                      style: const TextStyle(
                           fontSize: 42, fontWeight: FontWeight.bold))),
               _stopwatch.isRunning
                   ? FloatingActionButton(
                       tooltip: 'End Race',
                       backgroundColor: Colors.red,
-                      child: Icon(Icons.stop_outlined),
+                      child: const Icon(Icons.stop_outlined),
                       onPressed: handleStartStop)
                   : FloatingActionButton(
                       tooltip: 'Start Race',
-                      child: Icon(Icons.play_arrow_outlined),
+                      child: const Icon(Icons.play_arrow_outlined),
                       onPressed: handleStartStop),
             ],
           ),
@@ -160,7 +162,7 @@ class _RaceHomePageState extends State<RaceHomePage> {
                       color: Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.bold))),
-          Divider(thickness: 2),
+          const Divider(thickness: 2),
           Expanded(
             child: ListView.builder(
               itemCount: racers.length,
@@ -182,12 +184,12 @@ class _RaceHomePageState extends State<RaceHomePage> {
                         children: [
                           Text(
                               'Bib: ${racers[index].bibNumber.toString().padLeft(4, '0')}',
-                              style: TextStyle(fontSize: 16)),
+                              style: const TextStyle(fontSize: 16)),
                           Text(
                               'Group: ${racers[index].group.toString().padLeft(2, '0')}',
-                              style: TextStyle(fontSize: 16)),
+                              style: const TextStyle(fontSize: 16)),
                           Text(racers[index].name,
-                              style: TextStyle(fontSize: 16)),
+                              style: const TextStyle(fontSize: 16)),
                         ],
                       ),
                       const Padding(

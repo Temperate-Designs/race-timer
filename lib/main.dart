@@ -5,5 +5,5 @@ import 'package:flutter/widgets.dart';
 import "race_app.dart";
 
 void main() {
-  runApp(RaceApp());
+  runApp(const RaceApp());
 }

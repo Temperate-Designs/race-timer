@@ -138,59 +138,57 @@ class AddRacerPage extends StatelessWidget {
           ),
         ],
       ),
-      body: Container(
-        child: Align(
-          alignment: Alignment.topCenter,
-          child: Table(
-            defaultColumnWidth: const IntrinsicColumnWidth(),
-            children: [
-              TableRow(
-                children: [
-                  const TableCell(
-                      verticalAlignment: TableCellVerticalAlignment.middle,
-                      child: Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text("Racer's Name"))),
-                  Container(
-                    width: 200.0,
-                    child: TextField(
-                      controller: nameController,
-                    ),
-                  ),
-                ],
-              ),
-              TableRow(
-                children: [
-                  const TableCell(
-                      verticalAlignment: TableCellVerticalAlignment.middle,
-                      child: Padding(
+      body: Align(
+        alignment: Alignment.topCenter,
+        child: Table(
+          defaultColumnWidth: const IntrinsicColumnWidth(),
+          children: [
+            TableRow(
+              children: [
+                const TableCell(
+                    verticalAlignment: TableCellVerticalAlignment.middle,
+                    child: Padding(
                         padding: EdgeInsets.all(8.0),
-                        child: Text("Bib Number"),
-                      )),
-                  TextField(
-                    decoration: InputDecoration(
-                        hintText: (maxBibNumber() + 1).toString()),
-                    controller: bibController,
-                    keyboardType: TextInputType.number,
+                        child: Text("Racer's Name"))),
+                SizedBox(
+                  width: 200.0,
+                  child: TextField(
+                    controller: nameController,
                   ),
-                ],
-              ),
-              TableRow(children: [
+                ),
+              ],
+            ),
+            TableRow(
+              children: [
                 const TableCell(
                     verticalAlignment: TableCellVerticalAlignment.middle,
                     child: Padding(
                       padding: EdgeInsets.all(8.0),
-                      child: Text("Group Number"),
+                      child: Text("Bib Number"),
                     )),
                 TextField(
-                  decoration:
-                      InputDecoration(hintText: maxGroupNumber().toString()),
-                  controller: groupController,
+                  decoration: InputDecoration(
+                      hintText: (maxBibNumber() + 1).toString()),
+                  controller: bibController,
                   keyboardType: TextInputType.number,
                 ),
-              ])
-            ],
-          ),
+              ],
+            ),
+            TableRow(children: [
+              const TableCell(
+                  verticalAlignment: TableCellVerticalAlignment.middle,
+                  child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text("Group Number"),
+                  )),
+              TextField(
+                decoration:
+                    InputDecoration(hintText: maxGroupNumber().toString()),
+                controller: groupController,
+                keyboardType: TextInputType.number,
+              ),
+            ])
+          ],
         ),
       ),
     );
