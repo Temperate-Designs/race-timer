@@ -216,56 +216,6 @@ class _RaceHomePageState extends State<RaceHomePage> {
                     ],
                   ),
                 );
-                // ListTile(
-                // title: Table(
-                //   children: [
-                //     TableRow(
-                //       children: [
-                //         Text(
-                //             'Bib: ${racers[index].bibNumber.toString().padLeft(4, '0')}',
-                //             style: TextStyle(fontSize: 20)),
-                //         FloatingActionButton(
-                //             tooltip: "Individual Start",
-                //             child: Icon(Icons.play_arrow_rounded, size: 16),
-                //             onPressed: handleStartStop),
-                //         Text(
-                //             formatTime(racers[index].isRunning
-                //                 ? _stopwatch.elapsedMilliseconds
-                //                 : racers[index].milliseconds),
-                //             style: TextStyle(fontSize: 20)),
-                //       ],
-                //     ),
-                //     TableRow(children: [
-                //       Text(
-                //           'Group: ${racers[index].group.toString().padLeft(2, '0')}',
-                //           style: TextStyle(fontSize: 20)),
-                //       Padding(
-                //         padding: const EdgeInsets.all(0),
-                //       ),
-                //       Text(racers[index].name, style: TextStyle(fontSize: 20))
-                //     ]),
-                //   ],
-                // ),
-                //   onTap: () {
-                //     if (racers[index].isRunning && _stopwatch.isRunning) {
-                //       racers[index].isRunning = false;
-                //       racers[index].milliseconds =
-                //           _stopwatch.elapsedMilliseconds;
-                //       arrangeRacers();
-                //     }
-                //     if (stillRunning().length == 0) {
-                //       handleStartStop();
-                //     }
-                //   },
-                //   dense: true,
-                //   tileColor: racers[index].isRunning
-                //       ? (racers[index].group % 2 == 0
-                //           ? Colors.lightGreen
-                //           : Colors.green)
-                //       : (racers[index].group % 2 == 0
-                //           ? Colors.blueGrey
-                //           : Colors.grey),
-                // );
               },
             ),
           ),
