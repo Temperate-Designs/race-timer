@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.race_timer">
+    package="com.temperatedesigns.swn_race_timer">
    <application
-        android:label="race_timer"
+        android:label="swn_race_timer"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

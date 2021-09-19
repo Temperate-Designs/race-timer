@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.10)
 project(runner LANGUAGES CXX)
 
-set(BINARY_NAME "race_timer")
-set(APPLICATION_ID "com.example.race_timer")
+set(BINARY_NAME "swn_race_timer")
+set(APPLICATION_ID "com.temperatedesigns.swn_race_timer")
 
 cmake_policy(SET CMP0063 NEW)
 

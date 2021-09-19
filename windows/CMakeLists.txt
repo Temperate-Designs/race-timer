@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
-project(race_timer LANGUAGES CXX)
+project(swn_race_timer LANGUAGES CXX)
 
-set(BINARY_NAME "race_timer")
+set(BINARY_NAME "swn_race_timer")
 
 cmake_policy(SET CMP0063 NEW)
 
