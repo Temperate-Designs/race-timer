@@ -66,6 +66,34 @@ class _RaceHomePageState extends State<RaceHomePage> {
     return List.from(racers.where((racer) => racer.isRunning));
   }
 
+  FloatingActionButton racerStartStopButton(Racer racer) {
+    switch (_raceType) {
+      case RaceType.mass:
+        {
+          if (_stopwatch.isRunning) {
+            return FloatingActionButton(
+                tooltip: 'End Race',
+                backgroundColor: Colors.red,
+                child: const Icon(Icons.stop_outlined),
+                onPressed: () {
+                  handleStartStop(racer);
+                });
+          } else {
+            return FloatingActionButton(
+                tooltip: 'Start Race',
+                child: const Icon(Icons.play_arrow_outlined),
+                onPressed: () {
+                  handleStartStop(racer);
+                });
+          }
+        }
+        break;
+      default:
+        return FloatingActionButton(onPressed: () {});
+        break;
+    }
+  }
+
   void handleStartStop([Racer? racer]) {
     switch (_raceType) {
       case RaceType.mass:
@@ -266,20 +294,7 @@ class _RaceHomePageState extends State<RaceHomePage> {
                       const Padding(
                         padding: EdgeInsets.all(6),
                       ),
-                      _stopwatch.isRunning
-                          ? FloatingActionButton(
-                              tooltip: 'End Race',
-                              backgroundColor: Colors.red,
-                              child: const Icon(Icons.stop_outlined),
-                              onPressed: () {
-                                handleStartStop(racers[index]);
-                              })
-                          : FloatingActionButton(
-                              tooltip: 'Start Race',
-                              child: const Icon(Icons.play_arrow_outlined),
-                              onPressed: () {
-                                handleStartStop(racers[index]);
-                              }),
+                      racerStartStopButton(racers[index]),
                     ],
                   ),
                 );
