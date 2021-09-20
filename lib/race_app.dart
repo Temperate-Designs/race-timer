@@ -42,6 +42,7 @@ class RaceHomePage extends StatefulWidget {
 enum RaceType { individual, group, mass }
 
 class _RaceHomePageState extends State<RaceHomePage> {
+  bool _raceStarted = false;
   Stopwatch _stopwatch = Stopwatch();
   Timer? _timer;
   RaceType _raceType = RaceType.individual;
@@ -156,7 +157,9 @@ class _RaceHomePageState extends State<RaceHomePage> {
                   tooltip: 'Individual Starts',
                   label: const Text('Individual'),
                   onPressed: () => setState(() {
-                    _raceType = RaceType.individual;
+                    if (!_raceStarted) {
+                      _raceType = RaceType.individual;
+                    }
                   }),
                 ),
               ),
@@ -168,7 +171,9 @@ class _RaceHomePageState extends State<RaceHomePage> {
                   tooltip: 'Group Starts',
                   label: const Text('Group'),
                   onPressed: () => setState(() {
-                    _raceType = RaceType.group;
+                    if (!_raceStarted) {
+                      _raceType = RaceType.group;
+                    }
                   }),
                 ),
               ),
@@ -179,8 +184,10 @@ class _RaceHomePageState extends State<RaceHomePage> {
                       _raceType == RaceType.mass ? Colors.red : Colors.blue,
                   tooltip: 'Mass Starts',
                   label: const Text('Mass'),
-                  onPressed: () => setState( () {
-                    _raceType = RaceType.mass;
+                  onPressed: () => setState(() {
+                    if (!_raceStarted) {
+                      _raceType = RaceType.mass;
+                    }
                   }),
                 ),
               ),
