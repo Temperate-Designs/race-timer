@@ -66,19 +66,41 @@ class _RaceHomePageState extends State<RaceHomePage> {
     return List.from(racers.where((racer) => racer.isRunning));
   }
 
-  void handleStartStop() {
-    if (_stopwatch.isRunning) {
-      _stopwatch.stop();
-      _timer?.cancel();
-      setState(() {});
-    } else {
-      if (stillRunning().isNotEmpty) {
-        _stopwatch.start();
-        _timer = Timer.periodic(const Duration(milliseconds: 30), (timer) {
-          setState(() {});
-        });
-        setState(() {}); // re-render the page
-      }
+  void handleStartStop([Racer? racer]) {
+    switch (_raceType) {
+      case RaceType.mass:
+        {
+          if (!_stopwatch.isRunning && !_raceStarted) {
+            // Start the race
+            _raceStarted = true;
+            _stopwatch.start();
+            // Make sure we re-render the app frequently so that the stopwatch is updated.
+            _timer = Timer.periodic(const Duration(milliseconds: 30), (timer) {
+              setState(() {});
+            });
+            // Re-render app now.
+            setState(() {});
+          } else if (_stopwatch.isRunning) {
+            if (racer != null) {
+              racer.isRunning = false;
+              racer.milliseconds = _stopwatch.elapsedMilliseconds;
+              arrangeRacers();
+              setState(() {});
+            }
+            if (racer == null || stillRunning().isEmpty) {
+              _stopwatch.stop();
+              _timer?.cancel();
+              setState(() {});
+            }
+          }
+        }
+        break;
+      case RaceType.group:
+        {}
+        break;
+      case RaceType.individual:
+        {}
+        break;
     }
   }
 
@@ -243,11 +265,15 @@ class _RaceHomePageState extends State<RaceHomePage> {
                               tooltip: 'End Race',
                               backgroundColor: Colors.red,
                               child: const Icon(Icons.stop_outlined),
-                              onPressed: handleStartStop)
+                              onPressed: () {
+                                handleStartStop(racers[index]);
+                              })
                           : FloatingActionButton(
                               tooltip: 'Start Race',
                               child: const Icon(Icons.play_arrow_outlined),
-                              onPressed: handleStartStop),
+                              onPressed: () {
+                                handleStartStop(racers[index]);
+                              }),
                     ],
                   ),
                 );
