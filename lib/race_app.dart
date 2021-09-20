@@ -74,6 +74,9 @@ class _RaceHomePageState extends State<RaceHomePage> {
             // Start the race
             _raceStarted = true;
             _stopwatch.start();
+            racers.forEach((racer) {
+              racer.hasStarted = true;
+            });
             // Make sure we re-render the app frequently so that the stopwatch is updated.
             _timer = Timer.periodic(const Duration(milliseconds: 30), (timer) {
               setState(() {});
@@ -83,7 +86,7 @@ class _RaceHomePageState extends State<RaceHomePage> {
           } else if (_stopwatch.isRunning) {
             if (racer != null) {
               racer.isRunning = false;
-              racer.milliseconds = _stopwatch.elapsedMilliseconds;
+              racer.finalMilliseconds = _stopwatch.elapsedMilliseconds;
               arrangeRacers();
               setState(() {});
             }
@@ -253,9 +256,12 @@ class _RaceHomePageState extends State<RaceHomePage> {
                         ),
                       ),
                       Text(
-                          formatTime(racers[index].isRunning
-                              ? _stopwatch.elapsedMilliseconds
-                              : racers[index].milliseconds),
+                          formatTime(racers[index].isRunning &&
+                                  racers[index].hasStarted
+                              ? (_stopwatch.elapsedMilliseconds -
+                                  racers[index].startMilliseconds)
+                              : (racers[index].finalMilliseconds -
+                                  racers[index].startMilliseconds)),
                           style: const TextStyle(fontSize: 32)),
                       const Padding(
                         padding: EdgeInsets.all(6),
