@@ -61,6 +61,16 @@ const List<String> lastNames = [
 
 List<Racer> racers = [];
 
+List<Racer> debugRacers() {
+  racers = [];
+  for (var group = 0; group < 3; group++) {
+    for (var racer = 0; racer < 3; racer++) {
+      racers.add(Racer.withoutName(group * 3 + racer, group + 1));
+    }
+  }
+  return racers;
+}
+
 extension StringExtension on String {
   String capitalize() {
     return "${this[0].toUpperCase()}${substring(1)}";

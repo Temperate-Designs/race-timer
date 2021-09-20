@@ -14,22 +14,7 @@ class RaceApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (kDebugMode) {
-      racers = [
-        Racer.withoutName(1, 1),
-        Racer.withoutName(2, 1),
-        Racer.withoutName(3, 1),
-        Racer.withoutName(4, 2),
-        Racer.withoutName(5, 2),
-        Racer.withoutName(6, 3),
-        Racer.withoutName(7, 3),
-        Racer.withoutName(8, 4),
-        Racer.withoutName(9, 4),
-        Racer.withoutName(10, 5),
-        Racer.withoutName(11, 5),
-        Racer.withoutName(12, 6),
-        Racer.withoutName(13, 6),
-        Racer.withoutName(14, 6),
-      ];
+      racers = debugRacers();
     }
 
     return MaterialApp(
@@ -114,9 +99,14 @@ class _RaceHomePageState extends State<RaceHomePage> {
           IconButton(
             icon: const Icon(Icons.clear),
             onPressed: () {
-              racers = [];
               _stopwatch = Stopwatch();
               _timer?.cancel();
+              _raceStarted = false;
+              if (kDebugMode) {
+                racers = debugRacers();
+              } else {
+                racers = [];
+              }
               setState(() {});
             },
           ),
