@@ -54,9 +54,12 @@ class RaceHomePage extends StatefulWidget {
   _RaceHomePageState createState() => _RaceHomePageState();
 }
 
+enum RaceType { individual, group, mass }
+
 class _RaceHomePageState extends State<RaceHomePage> {
   Stopwatch _stopwatch = Stopwatch();
   Timer? _timer;
+  RaceType _raceType = RaceType.individual;
 
   @override
   void dispose() {
@@ -151,17 +154,48 @@ class _RaceHomePageState extends State<RaceHomePage> {
                       onPressed: handleStartStop),
             ],
           ),
-          Container(
-              margin: const EdgeInsets.all(6.0),
-              padding: const EdgeInsets.all(6.0),
-              decoration: BoxDecoration(
-                  color: Colors.lightBlue,
-                  border: Border.all(color: Colors.blueAccent)),
-              child: const Text('Racers',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold))),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: FloatingActionButton.extended(
+                  backgroundColor: _raceType == RaceType.individual
+                      ? Colors.red
+                      : Colors.blue,
+                  tooltip: 'Individual Starts',
+                  label: const Text('Individual'),
+                  onPressed: () => setState(() {
+                    _raceType = RaceType.individual;
+                  }),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: FloatingActionButton.extended(
+                  backgroundColor:
+                      _raceType == RaceType.group ? Colors.red : Colors.blue,
+                  tooltip: 'Group Starts',
+                  label: const Text('Group'),
+                  onPressed: () => setState(() {
+                    _raceType = RaceType.group;
+                  }),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: FloatingActionButton.extended(
+                  backgroundColor:
+                      _raceType == RaceType.mass ? Colors.red : Colors.blue,
+                  tooltip: 'Mass Starts',
+                  label: const Text('Mass'),
+                  onPressed: () => setState( () {
+                    _raceType = RaceType.mass;
+                  }),
+                ),
+              ),
+            ],
+          ),
           const Divider(thickness: 2),
           Expanded(
             child: ListView.builder(
