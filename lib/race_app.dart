@@ -58,7 +58,9 @@ class _RaceHomePageState extends State<RaceHomePage> {
         List.from(racers.where((racer) => racer.isRunning));
     stillRunning.sort((a, b) => a.bibNumber.compareTo(b.bibNumber));
     List<Racer> finished = List.from(racers.where((racer) => !racer.isRunning));
-    finished.sort((a, b) => a.bibNumber.compareTo(b.bibNumber));
+    finished.sort((a, b) =>
+        (a.finalMilliseconds - a.startMilliseconds) -
+        (b.finalMilliseconds - b.startMilliseconds));
     racers = stillRunning + finished;
   }
 
