@@ -65,7 +65,7 @@ List<Racer> debugRacers() {
   racers = [];
   for (var group = 0; group < 3; group++) {
     for (var racer = 0; racer < 3; racer++) {
-      racers.add(Racer.withoutName(group * 3 + racer, group + 1));
+      racers.add(Racer(group * 3 + racer, group + 1));
     }
   }
   return racers;
@@ -88,13 +88,7 @@ class Racer {
 
   final randomizer = Random();
 
-  Racer.withoutName(this.bibNumber, this.group) {
-    name = firstNames[randomizer.nextInt(firstNames.length)].capitalize() +
-        ' ' +
-        lastNames[randomizer.nextInt(lastNames.length)].capitalize();
-  }
-
-  Racer(this.bibNumber, this.group, this.name);
+  Racer(this.bibNumber, this.group, {this.name = ""});
 }
 
 int maxBibNumber() {
@@ -138,11 +132,7 @@ class AddRacerPage extends StatelessWidget {
               if (bibNumber == null || bibNumber < 1) {
                 bibNumber = maxBibNumber() + 1;
               }
-              if (name.isEmpty) {
-                racers.add(Racer.withoutName(bibNumber, groupNumber));
-              } else {
-                racers.add(Racer(bibNumber, groupNumber, name));
-              }
+              racers.add(Racer(bibNumber, groupNumber, name: name));
               Navigator.pop(context);
             },
             tooltip: 'Save Racer',
