@@ -47,6 +47,9 @@ class _RaceHomePageState extends State<RaceHomePage> {
   Timer? _timer;
   RaceType _raceType = RaceType.individual;
 
+  static const startIcon = Icon(Icons.play_arrow_outlined);
+  static const stopIcon = Icon(Icons.stop_outlined);
+
   @override
   void dispose() {
     _timer?.cancel();
@@ -66,82 +69,6 @@ class _RaceHomePageState extends State<RaceHomePage> {
 
   List<Racer> stillRunning() {
     return List.from(racers.where((racer) => racer.isRunning));
-  }
-
-  Widget racerStartStopButton([Racer? racer]) {
-    switch (_raceType) {
-      case RaceType.mass:
-        if (_stopwatch.isRunning) {
-          return FloatingActionButton(
-              tooltip: 'End Race',
-              backgroundColor: Colors.red,
-              child: const Icon(Icons.stop_outlined),
-              onPressed: () {
-                if (racer != null && racer.isRunning) {
-                  handleStop(racer: racer);
-                }
-              });
-        } else {
-          if (racer == null) {
-            return FloatingActionButton(
-                tooltip: 'Start Race',
-                backgroundColor: Colors.green,
-                child: const Icon(Icons.play_arrow_outlined),
-                onPressed: () {
-                  handleStart();
-                });
-          } else {
-            return FloatingActionButton(
-                tooltip: 'Start Race',
-                backgroundColor: Colors.grey,
-                child: const Icon(Icons.play_arrow_outlined),
-                onPressed: () {});
-          }
-        }
-      case RaceType.group:
-        if (!_stopwatch.isRunning) {
-          if (racer == null) {
-            return FloatingActionButton(
-                tooltip: 'Start Race',
-                backgroundColor: Colors.grey,
-                child: const Icon(Icons.play_arrow_outlined),
-                onPressed: () {});
-          } else {
-            return FloatingActionButton(
-                tooltip: 'Start Race',
-                child: const Icon(Icons.play_arrow_outlined),
-                onPressed: () {
-                  handleStart(group: racer.group);
-                });
-          }
-        } else {
-          if (racer != null) {
-            if (racer.hasStarted) {
-              return FloatingActionButton(
-                  tooltip: 'Stop Racer',
-                  backgroundColor: Colors.red,
-                  child: const Icon(Icons.stop_outlined),
-                  onPressed: () {
-                    handleStop(racer: racer);
-                  });
-            } else {
-              return FloatingActionButton(
-                  tooltip: 'Start Group',
-                  child: const Icon(Icons.play_arrow_outlined),
-                  onPressed: () {
-                    handleStart(group: racer.group);
-                  });
-            }
-          }
-          return FloatingActionButton(
-              tooltip: 'End Race',
-              backgroundColor: Colors.grey,
-              child: const Icon(Icons.stop_outlined),
-              onPressed: () {});
-        }
-      case RaceType.individual:
-        return Container();
-    }
   }
 
   void handleStart({Racer? racer, int? group}) {
@@ -175,7 +102,7 @@ class _RaceHomePageState extends State<RaceHomePage> {
           setState(() {});
         }
         if (group == null) {
-          debugPrint('racer cannot be null');
+          debugPrint('group cannot be null');
         }
         racers.where((r) => r.group == group).forEach((r) {
           r.hasStarted = true;
@@ -183,7 +110,22 @@ class _RaceHomePageState extends State<RaceHomePage> {
         });
         break;
       case RaceType.individual:
-        {}
+        if (!_stopwatch.isRunning && !_raceStarted) {
+          // Start the race
+          _raceStarted = true;
+          _stopwatch.start();
+          // Make sure we re-render the app frequently so that the stopwatch is updated.
+          _timer = Timer.periodic(const Duration(milliseconds: 30), (timer) {
+            setState(() {});
+          });
+          // Re-render app now.
+          setState(() {});
+        }
+        if (racer == null) {
+          debugPrint('racer cannot be null');
+        }
+        racer?.hasStarted = true;
+        racer?.startMilliseconds = _stopwatch.elapsedMilliseconds;
         break;
     }
   }
@@ -206,6 +148,7 @@ class _RaceHomePageState extends State<RaceHomePage> {
         }
         break;
       case RaceType.group:
+      case RaceType.individual:
         if (_stopwatch.isRunning) {
           if (racer != null) {
             racer.isRunning = false;
@@ -220,8 +163,125 @@ class _RaceHomePageState extends State<RaceHomePage> {
           }
         }
         break;
+    }
+  }
+
+  Widget racerStartStopButton([Racer? racer]) {
+    switch (_raceType) {
+      case RaceType.mass:
+        if (_stopwatch.isRunning) {
+          return FloatingActionButton(
+              tooltip: 'End Race',
+              backgroundColor: Colors.red,
+              child: stopIcon,
+              onPressed: () {
+                if (racer != null && racer.isRunning) {
+                  handleStop(racer: racer);
+                }
+              });
+        } else {
+          if (racer == null) {
+            return FloatingActionButton(
+                tooltip: 'Start Race',
+                backgroundColor: Colors.green,
+                child: startIcon,
+                onPressed: () {
+                  handleStart();
+                });
+          } else {
+            return FloatingActionButton(
+                tooltip: 'Start Race',
+                backgroundColor: Colors.grey,
+                child: startIcon,
+                onPressed: () {});
+          }
+        }
+      case RaceType.group:
+        if (!_stopwatch.isRunning) {
+          if (racer == null) {
+            return FloatingActionButton(
+                tooltip: 'Start Race',
+                backgroundColor: Colors.grey,
+                child: startIcon,
+                onPressed: () {});
+          } else {
+            return FloatingActionButton(
+                tooltip: 'Start Race',
+                backgroundColor: Colors.blue,
+                child: startIcon,
+                onPressed: () {
+                  handleStart(group: racer.group);
+                });
+          }
+        } else {
+          if (racer != null) {
+            if (racer.hasStarted) {
+              return FloatingActionButton(
+                  tooltip: 'Stop Racer',
+                  backgroundColor: Colors.red,
+                  child: stopIcon,
+                  onPressed: () {
+                    handleStop(racer: racer);
+                  });
+            } else {
+              return FloatingActionButton(
+                  tooltip: 'Start Group',
+                  backgroundColor: Colors.blue,
+                  child: startIcon,
+                  onPressed: () {
+                    handleStart(group: racer.group);
+                  });
+            }
+          }
+          return FloatingActionButton(
+              tooltip: 'End Race',
+              backgroundColor: Colors.grey,
+              child: stopIcon,
+              onPressed: () {});
+        }
       case RaceType.individual:
-        break;
+        if (!_stopwatch.isRunning) {
+          if (racer == null) {
+            return FloatingActionButton(
+                tooltip: 'Start Race',
+                backgroundColor: Colors.grey,
+                child: startIcon,
+                onPressed: () {});
+          } else {
+            return FloatingActionButton(
+                tooltip: 'Start Race',
+                backgroundColor: Colors.blue,
+                child: startIcon,
+                onPressed: () {
+                  handleStart(racer: racer);
+                });
+          }
+        } else {
+          if (racer != null) {
+            if (racer.hasStarted) {
+              return FloatingActionButton(
+                  tooltip: 'Stop Racer',
+                  backgroundColor: Colors.red,
+                  child: stopIcon,
+                  onPressed: () {
+                    handleStop(racer: racer);
+                  });
+            } else {
+              return FloatingActionButton(
+                  tooltip: 'Start Racer',
+                  backgroundColor: Colors.blue,
+                  child: startIcon,
+                  onPressed: () {
+                    handleStart(racer: racer);
+                  });
+            }
+          }
+          return FloatingActionButton(
+              tooltip: 'End Race',
+              backgroundColor: Colors.grey,
+              child: stopIcon,
+              onPressed: () {});
+        }
     }
   }
 
