@@ -13,10 +13,6 @@ class RaceApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (kDebugMode) {
-      racers = debugRacers();
-    }
-
     return MaterialApp(
       title: title,
       theme: ThemeData(
@@ -306,11 +302,7 @@ class _RaceHomePageState extends State<RaceHomePage> {
               _stopwatch = Stopwatch();
               _timer?.cancel();
               _raceStarted = false;
-              if (kDebugMode) {
-                racers = debugRacers();
-              } else {
-                racers = [];
-              }
+              racers = [];
               setState(() {});
             },
           ),
