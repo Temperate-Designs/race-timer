@@ -432,45 +432,46 @@ class _RaceHomePageState extends State<RaceHomePage> {
             child: ListView.builder(
               itemCount: racers.length,
               itemBuilder: (context, index) {
-                return Container(
-                  margin: const EdgeInsets.all(4.0),
-                  padding: const EdgeInsets.all(4.0),
+                return Material(
                   color: racerCardColor(index),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                              'Bib: ${racers[index].bibNumber.toString().padLeft(4, '0')}',
-                              style: const TextStyle(fontSize: 16)),
-                          Text(
-                              'Group: ${racers[index].group.toString().padLeft(2, '0')}',
-                              style: const TextStyle(fontSize: 16)),
-                          Text(racers[index].name,
-                              style: const TextStyle(fontSize: 16)),
-                        ],
-                      ),
-                      const Expanded(
-                        child: Padding(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                                'Bib: ${racers[index].bibNumber.toString().padLeft(4, '0')}',
+                                style: const TextStyle(fontSize: 16)),
+                            Text(
+                                'Group: ${racers[index].group.toString().padLeft(2, '0')}',
+                                style: const TextStyle(fontSize: 16)),
+                            Text(racers[index].name,
+                                style: const TextStyle(fontSize: 16)),
+                          ],
+                        ),
+                        const Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.all(6),
+                          ),
+                        ),
+                        Text(
+                            formatTime(racers[index].isRunning &&
+                                    racers[index].hasStarted
+                                ? (_stopwatch.elapsedMilliseconds -
+                                    racers[index].startMilliseconds)
+                                : (racers[index].finalMilliseconds -
+                                    racers[index].startMilliseconds)),
+                            style: const TextStyle(fontSize: 32)),
+                        const Padding(
                           padding: EdgeInsets.all(6),
                         ),
-                      ),
-                      Text(
-                          formatTime(racers[index].isRunning &&
-                                  racers[index].hasStarted
-                              ? (_stopwatch.elapsedMilliseconds -
-                                  racers[index].startMilliseconds)
-                              : (racers[index].finalMilliseconds -
-                                  racers[index].startMilliseconds)),
-                          style: const TextStyle(fontSize: 32)),
-                      const Padding(
-                        padding: EdgeInsets.all(6),
-                      ),
-                      racerStartStopButton(racers[index]),
-                    ],
+                        racerStartStopButton(racers[index]),
+                      ],
+                    ),
                   ),
                 );
               },
