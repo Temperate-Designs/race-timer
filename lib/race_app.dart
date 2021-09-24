@@ -200,7 +200,7 @@ class _RaceHomePageState extends State<RaceHomePage> {
         if (_stopwatch.isRunning) {
           return getStartStopButton(
             backgroundColor: Colors.red,
-            tooltip: 'End Race',
+            tooltip: AppLocalizations.of(context)!.end_race,
             icon: stopIcon,
             onPressed: () {
               if (racer != null && racer.isRunning) {
@@ -211,7 +211,7 @@ class _RaceHomePageState extends State<RaceHomePage> {
         } else {
           if (racer == null) {
             return getStartStopButton(
-              tooltip: 'Start Race',
+              tooltip: AppLocalizations.of(context)!.start_race,
               backgroundColor: Colors.green,
               icon: startIcon,
               onPressed: () {
@@ -220,7 +220,7 @@ class _RaceHomePageState extends State<RaceHomePage> {
             );
           } else {
             return getStartStopButton(
-              tooltip: 'Start Race',
+              tooltip: AppLocalizations.of(context)!.start_race,
               backgroundColor: Colors.grey,
               icon: startIcon,
               onPressed: () {},
@@ -231,14 +231,14 @@ class _RaceHomePageState extends State<RaceHomePage> {
         if (!_stopwatch.isRunning) {
           if (racer == null) {
             return getStartStopButton(
-              tooltip: 'Start Race',
+              tooltip: AppLocalizations.of(context)!.start_race,
               backgroundColor: Colors.grey,
               icon: startIcon,
               onPressed: () {},
             );
           } else {
             return getStartStopButton(
-              tooltip: 'Start Race',
+              tooltip: AppLocalizations.of(context)!.start_race,
               backgroundColor: Colors.blue,
               icon: startIcon,
               onPressed: () {
@@ -269,7 +269,7 @@ class _RaceHomePageState extends State<RaceHomePage> {
             }
           }
           return getStartStopButton(
-            tooltip: 'End Race',
+            tooltip: AppLocalizations.of(context)!.end_race,
             backgroundColor: Colors.grey,
             icon: stopIcon,
             onPressed: () {},
@@ -279,14 +279,14 @@ class _RaceHomePageState extends State<RaceHomePage> {
         if (!_stopwatch.isRunning) {
           if (racer == null) {
             return getStartStopButton(
-              tooltip: 'Start Race',
+              tooltip: AppLocalizations.of(context)!.start_race,
               backgroundColor: Colors.grey,
               icon: startIcon,
               onPressed: () {},
             );
           } else {
             return getStartStopButton(
-              tooltip: 'Start Race',
+              tooltip: AppLocalizations.of(context)!.start_race,
               backgroundColor: Colors.blue,
               icon: startIcon,
               onPressed: () {
@@ -317,7 +317,7 @@ class _RaceHomePageState extends State<RaceHomePage> {
             }
           }
           return getStartStopButton(
-            tooltip: 'End Race',
+            tooltip: AppLocalizations.of(context)!.end_race,
             backgroundColor: Colors.grey,
             icon: stopIcon,
             onPressed: () {},
