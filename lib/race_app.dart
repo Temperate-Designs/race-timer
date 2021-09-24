@@ -186,116 +186,129 @@ class _RaceHomePageState extends State<RaceHomePage> {
       case RaceType.mass:
         if (_stopwatch.isRunning) {
           return getStartStopButton(
-              backgroundColor: Colors.red,
-              tooltip: 'End Race',
-              icon: stopIcon,
-              onPressed: () {
-                if (racer != null && racer.isRunning) {
-                  handleStop(racer: racer);
-                }
-              });
+            backgroundColor: Colors.red,
+            tooltip: 'End Race',
+            icon: stopIcon,
+            onPressed: () {
+              if (racer != null && racer.isRunning) {
+                handleStop(racer: racer);
+              }
+            },
+          );
         } else {
           if (racer == null) {
             return getStartStopButton(
-                tooltip: 'Start Race',
-                backgroundColor: Colors.green,
-                icon: startIcon,
-                onPressed: () {
-                  handleStart();
-                });
+              tooltip: 'Start Race',
+              backgroundColor: Colors.green,
+              icon: startIcon,
+              onPressed: () {
+                handleStart();
+              },
+            );
           } else {
             return getStartStopButton(
-                tooltip: 'Start Race',
-                backgroundColor: Colors.grey,
-                icon: startIcon,
-                onPressed: () {});
+              tooltip: 'Start Race',
+              backgroundColor: Colors.grey,
+              icon: startIcon,
+              onPressed: () {},
+            );
           }
         }
       case RaceType.group:
         if (!_stopwatch.isRunning) {
           if (racer == null) {
             return getStartStopButton(
-                tooltip: 'Start Race',
-                backgroundColor: Colors.grey,
-                icon: startIcon,
-                onPressed: () {});
+              tooltip: 'Start Race',
+              backgroundColor: Colors.grey,
+              icon: startIcon,
+              onPressed: () {},
+            );
           } else {
             return getStartStopButton(
-                tooltip: 'Start Race',
-                backgroundColor: Colors.blue,
-                icon: startIcon,
-                onPressed: () {
-                  handleStart(group: racer.group);
-                });
+              tooltip: 'Start Race',
+              backgroundColor: Colors.blue,
+              icon: startIcon,
+              onPressed: () {
+                handleStart(group: racer.group);
+              },
+            );
           }
         } else {
           if (racer != null) {
             if (racer.hasStarted) {
               return getStartStopButton(
-                  tooltip: 'Stop Racer',
-                  backgroundColor: Colors.red,
-                  icon: stopIcon,
-                  onPressed: () {
-                    handleStop(racer: racer);
-                  });
+                tooltip: 'Stop Racer',
+                backgroundColor: Colors.red,
+                icon: stopIcon,
+                onPressed: () {
+                  handleStop(racer: racer);
+                },
+              );
             } else {
               return getStartStopButton(
-                  tooltip: 'Start Group',
-                  backgroundColor: Colors.blue,
-                  icon: startIcon,
-                  onPressed: () {
-                    handleStart(group: racer.group);
-                  });
+                tooltip: 'Start Group',
+                backgroundColor: Colors.blue,
+                icon: startIcon,
+                onPressed: () {
+                  handleStart(group: racer.group);
+                },
+              );
             }
           }
           return getStartStopButton(
-              tooltip: 'End Race',
-              backgroundColor: Colors.grey,
-              icon: stopIcon,
-              onPressed: () {});
+            tooltip: 'End Race',
+            backgroundColor: Colors.grey,
+            icon: stopIcon,
+            onPressed: () {},
+          );
         }
       case RaceType.individual:
         if (!_stopwatch.isRunning) {
           if (racer == null) {
             return getStartStopButton(
-                tooltip: 'Start Race',
-                backgroundColor: Colors.grey,
-                icon: startIcon,
-                onPressed: () {});
+              tooltip: 'Start Race',
+              backgroundColor: Colors.grey,
+              icon: startIcon,
+              onPressed: () {},
+            );
           } else {
             return getStartStopButton(
-                tooltip: 'Start Race',
-                backgroundColor: Colors.blue,
-                icon: startIcon,
-                onPressed: () {
-                  handleStart(racer: racer);
-                });
+              tooltip: 'Start Race',
+              backgroundColor: Colors.blue,
+              icon: startIcon,
+              onPressed: () {
+                handleStart(racer: racer);
+              },
+            );
           }
         } else {
           if (racer != null) {
             if (racer.hasStarted) {
               return getStartStopButton(
-                  tooltip: 'Stop Racer',
-                  backgroundColor: Colors.red,
-                  icon: stopIcon,
-                  onPressed: () {
-                    handleStop(racer: racer);
-                  });
+                tooltip: 'Stop Racer',
+                backgroundColor: Colors.red,
+                icon: stopIcon,
+                onPressed: () {
+                  handleStop(racer: racer);
+                },
+              );
             } else {
               return getStartStopButton(
-                  tooltip: 'Start Racer',
-                  backgroundColor: Colors.blue,
-                  icon: startIcon,
-                  onPressed: () {
-                    handleStart(racer: racer);
-                  });
+                tooltip: 'Start Racer',
+                backgroundColor: Colors.blue,
+                icon: startIcon,
+                onPressed: () {
+                  handleStart(racer: racer);
+                },
+              );
             }
           }
           return getStartStopButton(
-              tooltip: 'End Race',
-              backgroundColor: Colors.grey,
-              icon: stopIcon,
-              onPressed: () {});
+            tooltip: 'End Race',
+            backgroundColor: Colors.grey,
+            icon: stopIcon,
+            onPressed: () {},
+          );
         }
     }
   }
