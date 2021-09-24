@@ -168,9 +168,9 @@ class _RaceHomePageState extends State<RaceHomePage> {
       required Icon icon,
       Function()? onPressed}) {
     return Ink(
-      decoration: const ShapeDecoration(
-        color: Colors.red,
-        shape: CircleBorder(),
+      decoration: ShapeDecoration(
+        color: backgroundColor,
+        shape: const CircleBorder(),
       ),
       child: IconButton(
         icon: icon,
