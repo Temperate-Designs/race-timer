@@ -162,14 +162,33 @@ class _RaceHomePageState extends State<RaceHomePage> {
     }
   }
 
+  Ink getStartStopButton(
+      {required Color backgroundColor,
+      required String tooltip,
+      required Icon icon,
+      Function()? onPressed}) {
+    return Ink(
+      decoration: const ShapeDecoration(
+        color: Colors.red,
+        shape: CircleBorder(),
+      ),
+      child: IconButton(
+        icon: icon,
+        tooltip: tooltip,
+        color: Colors.white,
+        onPressed: onPressed,
+      ),
+    );
+  }
+
   Widget racerStartStopButton([Racer? racer]) {
     switch (_raceType) {
       case RaceType.mass:
         if (_stopwatch.isRunning) {
-          return FloatingActionButton(
-              tooltip: 'End Race',
+          return getStartStopButton(
               backgroundColor: Colors.red,
-              child: stopIcon,
+              tooltip: 'End Race',
+              icon: stopIcon,
               onPressed: () {
                 if (racer != null && racer.isRunning) {
                   handleStop(racer: racer);
@@ -177,34 +196,34 @@ class _RaceHomePageState extends State<RaceHomePage> {
               });
         } else {
           if (racer == null) {
-            return FloatingActionButton(
+            return getStartStopButton(
                 tooltip: 'Start Race',
                 backgroundColor: Colors.green,
-                child: startIcon,
+                icon: startIcon,
                 onPressed: () {
                   handleStart();
                 });
           } else {
-            return FloatingActionButton(
+            return getStartStopButton(
                 tooltip: 'Start Race',
                 backgroundColor: Colors.grey,
-                child: startIcon,
+                icon: startIcon,
                 onPressed: () {});
           }
         }
       case RaceType.group:
         if (!_stopwatch.isRunning) {
           if (racer == null) {
-            return FloatingActionButton(
+            return getStartStopButton(
                 tooltip: 'Start Race',
                 backgroundColor: Colors.grey,
-                child: startIcon,
+                icon: startIcon,
                 onPressed: () {});
           } else {
-            return FloatingActionButton(
+            return getStartStopButton(
                 tooltip: 'Start Race',
                 backgroundColor: Colors.blue,
-                child: startIcon,
+                icon: startIcon,
                 onPressed: () {
                   handleStart(group: racer.group);
                 });
@@ -212,42 +231,42 @@ class _RaceHomePageState extends State<RaceHomePage> {
         } else {
           if (racer != null) {
             if (racer.hasStarted) {
-              return FloatingActionButton(
+              return getStartStopButton(
                   tooltip: 'Stop Racer',
                   backgroundColor: Colors.red,
-                  child: stopIcon,
+                  icon: stopIcon,
                   onPressed: () {
                     handleStop(racer: racer);
                   });
             } else {
-              return FloatingActionButton(
+              return getStartStopButton(
                   tooltip: 'Start Group',
                   backgroundColor: Colors.blue,
-                  child: startIcon,
+                  icon: startIcon,
                   onPressed: () {
                     handleStart(group: racer.group);
                   });
             }
           }
-          return FloatingActionButton(
+          return getStartStopButton(
               tooltip: 'End Race',
               backgroundColor: Colors.grey,
-              child: stopIcon,
+              icon: stopIcon,
               onPressed: () {});
         }
       case RaceType.individual:
         if (!_stopwatch.isRunning) {
           if (racer == null) {
-            return FloatingActionButton(
+            return getStartStopButton(
                 tooltip: 'Start Race',
                 backgroundColor: Colors.grey,
-                child: startIcon,
+                icon: startIcon,
                 onPressed: () {});
           } else {
-            return FloatingActionButton(
+            return getStartStopButton(
                 tooltip: 'Start Race',
                 backgroundColor: Colors.blue,
-                child: startIcon,
+                icon: startIcon,
                 onPressed: () {
                   handleStart(racer: racer);
                 });
@@ -255,27 +274,27 @@ class _RaceHomePageState extends State<RaceHomePage> {
         } else {
           if (racer != null) {
             if (racer.hasStarted) {
-              return FloatingActionButton(
+              return getStartStopButton(
                   tooltip: 'Stop Racer',
                   backgroundColor: Colors.red,
-                  child: stopIcon,
+                  icon: stopIcon,
                   onPressed: () {
                     handleStop(racer: racer);
                   });
             } else {
-              return FloatingActionButton(
+              return getStartStopButton(
                   tooltip: 'Start Racer',
                   backgroundColor: Colors.blue,
-                  child: startIcon,
+                  icon: startIcon,
                   onPressed: () {
                     handleStart(racer: racer);
                   });
             }
           }
-          return FloatingActionButton(
+          return getStartStopButton(
               tooltip: 'End Race',
               backgroundColor: Colors.grey,
-              child: stopIcon,
+              icon: stopIcon,
               onPressed: () {});
         }
     }
@@ -336,12 +355,18 @@ class _RaceHomePageState extends State<RaceHomePage> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: FloatingActionButton.extended(
-                  backgroundColor: _raceType == RaceType.individual
-                      ? Colors.red
-                      : Colors.blue,
-                  tooltip: 'Individual Starts',
-                  label: const Text('Individual'),
+                child: ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.resolveWith((states) {
+                      if (_raceType == RaceType.individual) {
+                        return Colors.red;
+                      } else {
+                        return Colors.blue;
+                      }
+                    }),
+                  ),
+                  child: const Text('Individual'),
                   onPressed: () => setState(() {
                     if (!_raceStarted) {
                       _raceType = RaceType.individual;
@@ -351,11 +376,16 @@ class _RaceHomePageState extends State<RaceHomePage> {
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: FloatingActionButton.extended(
-                  backgroundColor:
-                      _raceType == RaceType.group ? Colors.red : Colors.blue,
-                  tooltip: 'Group Starts',
-                  label: const Text('Group'),
+                child: ElevatedButton(
+                  style: ButtonStyle(backgroundColor:
+                      MaterialStateProperty.resolveWith((states) {
+                    if (_raceType == RaceType.group) {
+                      return Colors.red;
+                    } else {
+                      return Colors.blue;
+                    }
+                  })),
+                  child: const Text('Group'),
                   onPressed: () => setState(() {
                     if (!_raceStarted) {
                       _raceType = RaceType.group;
@@ -365,11 +395,16 @@ class _RaceHomePageState extends State<RaceHomePage> {
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: FloatingActionButton.extended(
-                  backgroundColor:
-                      _raceType == RaceType.mass ? Colors.red : Colors.blue,
-                  tooltip: 'Mass Starts',
-                  label: const Text('Mass'),
+                child: ElevatedButton(
+                  style: ButtonStyle(backgroundColor:
+                      MaterialStateProperty.resolveWith((states) {
+                    if (_raceType == RaceType.mass) {
+                      return Colors.red;
+                    } else {
+                      return Colors.blue;
+                    }
+                  })),
+                  child: const Text('Mass'),
                   onPressed: () => setState(() {
                     if (!_raceStarted) {
                       _raceType = RaceType.mass;
