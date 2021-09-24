@@ -435,13 +435,7 @@ class _RaceHomePageState extends State<RaceHomePage> {
                 return Container(
                   margin: const EdgeInsets.all(4.0),
                   padding: const EdgeInsets.all(4.0),
-                  color: racers[index].isRunning
-                      ? (racers[index].group % 2 == 0
-                          ? Colors.lightGreen
-                          : Colors.green)
-                      : (racers[index].group % 2 == 0
-                          ? Colors.blueGrey
-                          : Colors.grey),
+                  color: racerCardColor(index),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -485,5 +479,21 @@ class _RaceHomePageState extends State<RaceHomePage> {
         ],
       ),
     );
+  }
+
+  MaterialColor racerCardColor(int index) {
+    if (racers[index].isRunning) {
+      if (racers[index].group % 2 == 0) {
+        return Colors.lightGreen;
+      } else {
+        return Colors.green;
+      }
+    } else {
+      if (racers[index].group % 2 == 0) {
+        return Colors.blueGrey;
+      } else {
+        return Colors.grey;
+      }
+    }
   }
 }
