@@ -2,7 +2,7 @@
     package="com.temperatedesigns.swn_race_timer">
    <application
         android:label="Southwest Nordic Race Timer"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
