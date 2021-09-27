@@ -255,7 +255,7 @@ class _RaceHomePageState extends State<RaceHomePage> {
               tooltip: AppLocalizations.of(context)!.start_race,
               backgroundColor: Colors.grey,
               icon: startIcon,
-              onPressed: () {},
+              onPressed: null,
             );
           }
         }
