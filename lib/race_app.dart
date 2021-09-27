@@ -143,7 +143,7 @@ class _RaceHomePageState extends State<RaceHomePage> {
     switch (_raceType) {
       case RaceType.mass:
         if (_stopwatch.isRunning) {
-          if (racer != null) {
+          if (racer != null && racer.isRunning) {
             racer.isRunning = false;
             racer.finalMilliseconds = _stopwatch.elapsedMilliseconds;
             arrangeRacers();
@@ -159,7 +159,7 @@ class _RaceHomePageState extends State<RaceHomePage> {
       case RaceType.group:
       case RaceType.individual:
         if (_stopwatch.isRunning) {
-          if (racer != null) {
+          if (racer != null && racer.isRunning) {
             racer.isRunning = false;
             racer.finalMilliseconds = _stopwatch.elapsedMilliseconds;
             arrangeRacers();
