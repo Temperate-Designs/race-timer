@@ -211,7 +211,7 @@ class _RaceHomePageState extends State<RaceHomePage> {
       {required Color backgroundColor,
       required String tooltip,
       required Icon icon,
-      Function()? onPressed}) {
+      required Function()? onPressed}) {
     return Ink(
       decoration: ShapeDecoration(
         color: backgroundColor,
