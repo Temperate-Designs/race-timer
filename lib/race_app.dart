@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import "add_racer.dart";
 
@@ -59,9 +60,40 @@ class _RaceHomePageState extends State<RaceHomePage> {
   static const startIcon = Icon(Icons.play_arrow_outlined);
   static const stopIcon = Icon(Icons.stop_outlined);
 
+  late BannerAd _ad;
+  bool _isAdLoaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _ad = BannerAd(
+      size: AdSize.banner,
+      adUnitId: kDebugMode
+          ? 'ca-app-pub-3940256099942544/6300978111'
+          : 'ca-app-pub-4328959315579213/8369004752',
+      listener: BannerAdListener(
+        onAdLoaded: (_) {
+          setState(() {
+            _isAdLoaded = true;
+          });
+        },
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+          print(
+              'Ad load failed (code = ${error.code}, message = ${error.message})');
+        },
+      ),
+      request: const AdRequest(),
+    );
+
+    _ad.load();
+  }
+
   @override
   void dispose() {
     _timer?.cancel();
+    _ad.dispose();
     super.dispose();
   }
 
@@ -362,6 +394,22 @@ class _RaceHomePageState extends State<RaceHomePage> {
       ),
       body: Column(
         children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: _isAdLoaded
+                    ? Container(
+                        child: AdWidget(ad: _ad),
+                        width: _ad.size.width.toDouble(),
+                        height: _ad.size.height.toDouble(),
+                        alignment: Alignment.center,
+                      )
+                    : null,
+              ),
+            ],
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
