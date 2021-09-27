@@ -292,7 +292,7 @@ class _RaceHomePageState extends State<RaceHomePage> {
             } else {
               return getStartStopButton(
                 tooltip: 'Start Group',
-                backgroundColor: Colors.blue,
+                backgroundColor: Colors.grey,
                 icon: startIcon,
                 onPressed: () {
                   handleStart(group: racer.group);
