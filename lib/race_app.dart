@@ -9,6 +9,8 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import "add_racer.dart";
 
+enum RaceType { individual, group, mass }
+
 class RaceApp extends StatelessWidget {
   final title = 'SWN Race Timer';
 
@@ -48,8 +50,6 @@ class RaceHomePage extends StatefulWidget {
   @override
   _RaceHomePageState createState() => _RaceHomePageState();
 }
-
-enum RaceType { individual, group, mass }
 
 class _RaceHomePageState extends State<RaceHomePage> {
   bool _raceStarted = false;
