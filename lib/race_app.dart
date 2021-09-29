@@ -60,41 +60,52 @@ class _RaceHomePageState extends State<RaceHomePage> {
   static const startIcon = Icon(Icons.play_arrow_outlined);
   static const stopIcon = Icon(Icons.stop_outlined);
 
-  late BannerAd _ad;
+  static const AdRequest request = AdRequest();
+
+  BannerAd? _ad;
   bool _isAdLoaded = false;
 
-  @override
-  void initState() {
-    super.initState();
+  Future<void> _createAnchoredBanner(BuildContext context) async {
+    final AnchoredAdaptiveBannerAdSize? size =
+        await AdSize.getAnchoredAdaptiveBannerAdSize(
+      Orientation.portrait,
+      MediaQuery.of(context).size.width.truncate(),
+    );
 
-    _ad = BannerAd(
-      size: AdSize.banner,
+    if (size == null) {
+      print('Unable to get height of anchored banner.');
+      return;
+    }
+
+    final BannerAd banner = BannerAd(
+      size: size,
+      request: request,
       adUnitId: kDebugMode
           ? 'ca-app-pub-3940256099942544/6300978111'
           : 'ca-app-pub-4328959315579213/8369004752',
       listener: BannerAdListener(
-        onAdLoaded: (_) {
+        onAdLoaded: (Ad ad) {
+          print('$BannerAd loaded.');
           setState(() {
-            _isAdLoaded = true;
+            _ad = ad as BannerAd?;
           });
         },
-        onAdFailedToLoad: (ad, error) {
+        onAdFailedToLoad: (Ad ad, LoadAdError error) {
+          print('$BannerAd failedToLoad: $error');
           ad.dispose();
-          print(
-              'Ad load failed (code = ${error.code}, message = ${error.message})');
         },
+        onAdOpened: (Ad ad) => print('$BannerAd onAdOpened.'),
+        onAdClosed: (Ad ad) => print('$BannerAd onAdClosed.'),
       ),
-      request: const AdRequest(),
     );
-
-    _ad.load();
+    return banner.load();
   }
 
   @override
   void dispose() {
-    _timer?.cancel();
-    _ad.dispose();
     super.dispose();
+    _timer?.cancel();
+    _ad?.dispose();
   }
 
   void arrangeRacers() {
@@ -369,178 +380,183 @@ class _RaceHomePageState extends State<RaceHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title!),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.clear),
-            onPressed: () {
-              _stopwatch = Stopwatch();
-              _timer?.cancel();
-              _raceStarted = false;
-              racers = [];
-              setState(() {});
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {
-              Future pushedName = Navigator.pushNamed(context, '/add-racer');
-              pushedName.then((_) => setState(() {}));
-            },
-          )
-        ],
-      ),
-      body: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: _isAdLoaded
-                    ? Container(
-                        child: AdWidget(ad: _ad),
-                        width: _ad.size.width.toDouble(),
-                        height: _ad.size.height.toDouble(),
-                        alignment: Alignment.center,
-                      )
-                    : null,
+    return Builder(builder: (context) {
+      if (!_isAdLoaded) {
+        _isAdLoaded = true;
+        _createAnchoredBanner(context);
+      }
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(widget.title!),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.clear),
+              onPressed: () {
+                _stopwatch = Stopwatch();
+                _timer?.cancel();
+                _raceStarted = false;
+                racers = [];
+                setState(() {});
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.add),
+              onPressed: () {
+                Future pushedName = Navigator.pushNamed(context, '/add-racer');
+                pushedName.then((_) => setState(() {}));
+              },
+            )
+          ],
+        ),
+        body: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (_ad != null)
+                    Container(
+                      child: AdWidget(ad: _ad!),
+                      width: _ad!.size.width.toDouble(),
+                      height: _ad!.size.height.toDouble(),
+                      alignment: Alignment.center,
+                    ),
+                ],
               ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                  margin: const EdgeInsets.all(16),
-                  padding: const EdgeInsets.all(10),
-                  decoration: const BoxDecoration(
-                      color: CupertinoColors.lightBackgroundGray),
-                  child: Text(formatTime(_stopwatch.elapsedMilliseconds),
-                      style: const TextStyle(
-                          fontSize: 42, fontWeight: FontWeight.bold))),
-              racerStartStopButton(),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ElevatedButton(
-                  style: ButtonStyle(
-                    backgroundColor:
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                    margin: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(10),
+                    decoration: const BoxDecoration(
+                        color: CupertinoColors.lightBackgroundGray),
+                    child: Text(formatTime(_stopwatch.elapsedMilliseconds),
+                        style: const TextStyle(
+                            fontSize: 42, fontWeight: FontWeight.bold))),
+                racerStartStopButton(),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.resolveWith((states) {
+                        if (_raceType == RaceType.individual) {
+                          return Colors.red;
+                        } else {
+                          return Colors.blue;
+                        }
+                      }),
+                    ),
+                    child: const Text('Individual'),
+                    onPressed: () => setState(() {
+                      if (!_raceStarted) {
+                        _raceType = RaceType.individual;
+                      }
+                    }),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    style: ButtonStyle(backgroundColor:
                         MaterialStateProperty.resolveWith((states) {
-                      if (_raceType == RaceType.individual) {
+                      if (_raceType == RaceType.group) {
                         return Colors.red;
                       } else {
                         return Colors.blue;
                       }
+                    })),
+                    child: const Text('Group'),
+                    onPressed: () => setState(() {
+                      if (!_raceStarted) {
+                        _raceType = RaceType.group;
+                      }
                     }),
                   ),
-                  child: const Text('Individual'),
-                  onPressed: () => setState(() {
-                    if (!_raceStarted) {
-                      _raceType = RaceType.individual;
-                    }
-                  }),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ElevatedButton(
-                  style: ButtonStyle(backgroundColor:
-                      MaterialStateProperty.resolveWith((states) {
-                    if (_raceType == RaceType.group) {
-                      return Colors.red;
-                    } else {
-                      return Colors.blue;
-                    }
-                  })),
-                  child: const Text('Group'),
-                  onPressed: () => setState(() {
-                    if (!_raceStarted) {
-                      _raceType = RaceType.group;
-                    }
-                  }),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    style: ButtonStyle(backgroundColor:
+                        MaterialStateProperty.resolveWith((states) {
+                      if (_raceType == RaceType.mass) {
+                        return Colors.red;
+                      } else {
+                        return Colors.blue;
+                      }
+                    })),
+                    child: const Text('Mass'),
+                    onPressed: () => setState(() {
+                      if (!_raceStarted) {
+                        _raceType = RaceType.mass;
+                      }
+                    }),
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ElevatedButton(
-                  style: ButtonStyle(backgroundColor:
-                      MaterialStateProperty.resolveWith((states) {
-                    if (_raceType == RaceType.mass) {
-                      return Colors.red;
-                    } else {
-                      return Colors.blue;
-                    }
-                  })),
-                  child: const Text('Mass'),
-                  onPressed: () => setState(() {
-                    if (!_raceStarted) {
-                      _raceType = RaceType.mass;
-                    }
-                  }),
-                ),
-              ),
-            ],
-          ),
-          const Divider(thickness: 2),
-          Expanded(
-            child: ListView.builder(
-              itemCount: racers.length,
-              itemBuilder: (context, index) {
-                return Material(
-                  color: racerCardColor(index),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                                'Bib: ${racers[index].bibNumber.toString().padLeft(4, '0')}',
-                                style: const TextStyle(fontSize: 16)),
-                            Text(
-                                'Group: ${racers[index].group.toString().padLeft(2, '0')}',
-                                style: const TextStyle(fontSize: 16)),
-                            Text(racers[index].name,
-                                style: const TextStyle(fontSize: 16)),
-                          ],
-                        ),
-                        const Expanded(
-                          child: Padding(
+              ],
+            ),
+            const Divider(thickness: 2),
+            Expanded(
+              child: ListView.builder(
+                itemCount: racers.length,
+                itemBuilder: (context, index) {
+                  return Material(
+                    color: racerCardColor(index),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                  'Bib: ${racers[index].bibNumber.toString().padLeft(4, '0')}',
+                                  style: const TextStyle(fontSize: 16)),
+                              Text(
+                                  'Group: ${racers[index].group.toString().padLeft(2, '0')}',
+                                  style: const TextStyle(fontSize: 16)),
+                              Text(racers[index].name,
+                                  style: const TextStyle(fontSize: 16)),
+                            ],
+                          ),
+                          const Expanded(
+                            child: Padding(
+                              padding: EdgeInsets.all(6),
+                            ),
+                          ),
+                          Text(
+                              formatTime(racers[index].isRunning &&
+                                      racers[index].hasStarted
+                                  ? (_stopwatch.elapsedMilliseconds -
+                                      racers[index].startMilliseconds)
+                                  : (racers[index].finalMilliseconds -
+                                      racers[index].startMilliseconds)),
+                              style: const TextStyle(fontSize: 32)),
+                          const Padding(
                             padding: EdgeInsets.all(6),
                           ),
-                        ),
-                        Text(
-                            formatTime(racers[index].isRunning &&
-                                    racers[index].hasStarted
-                                ? (_stopwatch.elapsedMilliseconds -
-                                    racers[index].startMilliseconds)
-                                : (racers[index].finalMilliseconds -
-                                    racers[index].startMilliseconds)),
-                            style: const TextStyle(fontSize: 32)),
-                        const Padding(
-                          padding: EdgeInsets.all(6),
-                        ),
-                        racerStartStopButton(racers[index]),
-                      ],
+                          racerStartStopButton(racers[index]),
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    });
   }
 
   MaterialColor racerCardColor(int index) {
