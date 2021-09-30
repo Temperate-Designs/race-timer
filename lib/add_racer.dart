@@ -3,62 +3,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-const List<String> firstNames = [
-  'good',
-  'new',
-  'first',
-  'last',
-  'long',
-  'great',
-  'little',
-  'own',
-  'other',
-  'old',
-  'right',
-  'big',
-  'high',
-  'different',
-  'small',
-  'large',
-  'next',
-  'early',
-  'young',
-  'important',
-  'few',
-  'public',
-  'bad',
-  'same',
-  'able',
-];
-
-const List<String> lastNames = [
-  'time',
-  'person',
-  'year',
-  'way',
-  'day',
-  'thing',
-  'man',
-  'world',
-  'life',
-  'hand',
-  'part',
-  'child',
-  'eye',
-  'woman',
-  'place',
-  'work',
-  'week',
-  'case',
-  'point',
-  'government',
-  'company',
-  'number',
-  'group',
-  'problem',
-  'fact',
-];
-
 List<Racer> racers = [];
 
 List<Racer> debugRacers() {
