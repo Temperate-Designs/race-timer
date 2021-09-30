@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import 'add_racer.dart';
 import 'racer.dart';
@@ -63,6 +64,14 @@ class _RaceHomePageState extends State<RaceHomePage> {
 
   static const AdRequest request = AdRequest();
 
+  PackageInfo _packageInfo = PackageInfo(
+    appName: 'Unknown',
+    packageName: 'Unknown',
+    version: 'Unknown',
+    buildNumber: 'Unknown',
+    buildSignature: 'Unknown',
+  );
+
   BannerAd? _ad;
   bool _isAdLoaded = false;
 
@@ -100,6 +109,19 @@ class _RaceHomePageState extends State<RaceHomePage> {
       ),
     );
     return banner.load();
+  }
+
+  Future<void> _initPackageInfo() async {
+    final info = await PackageInfo.fromPlatform();
+    setState(() {
+      _packageInfo = info;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _initPackageInfo();
   }
 
   @override
@@ -553,6 +575,10 @@ class _RaceHomePageState extends State<RaceHomePage> {
                   );
                 },
               ),
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Text('Version: ${_packageInfo.version}+${_packageInfo.buildNumber}'),
             ),
           ],
         ),
