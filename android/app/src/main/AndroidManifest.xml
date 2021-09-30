@@ -1,6 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.temperatedesigns.swn_race_timer">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:icon="@mipmap/launcher_icon"
         android:label="Southwest Nordic Race Timer">
