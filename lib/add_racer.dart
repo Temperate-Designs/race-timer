@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+import 'racer.dart';
+
 List<Racer> racers = [];
 
 List<Racer> debugRacers() {
