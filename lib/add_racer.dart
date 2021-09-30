@@ -7,34 +7,10 @@ import 'racer.dart';
 
 List<Racer> racers = [];
 
-List<Racer> debugRacers() {
-  racers = [];
-  for (var group = 0; group < 3; group++) {
-    for (var racer = 0; racer < 3; racer++) {
-      racers.add(Racer(group * 3 + racer, group + 1));
-    }
-  }
-  return racers;
-}
-
 extension StringExtension on String {
   String capitalize() {
     return "${this[0].toUpperCase()}${substring(1)}";
   }
-}
-
-class Racer {
-  int bibNumber = -1;
-  int group = 1;
-  String name = "";
-  int startMilliseconds = 0;
-  int finalMilliseconds = 0;
-  bool isRunning = true;
-  bool hasStarted = false;
-
-  final randomizer = Random();
-
-  Racer(this.bibNumber, this.group, {this.name = ""});
 }
 
 int maxBibNumber() {
