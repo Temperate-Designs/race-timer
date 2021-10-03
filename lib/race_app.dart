@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -83,7 +84,7 @@ class _RaceHomePageState extends State<RaceHomePage> {
     );
 
     if (size == null) {
-      print('Unable to get height of anchored banner.');
+      log('Unable to get height of anchored banner.');
       return;
     }
 
@@ -95,17 +96,17 @@ class _RaceHomePageState extends State<RaceHomePage> {
           : 'ca-app-pub-4328959315579213/8369004752',
       listener: BannerAdListener(
         onAdLoaded: (Ad ad) {
-          print('$BannerAd loaded.');
+          log('$BannerAd loaded.');
           setState(() {
             _ad = ad as BannerAd?;
           });
         },
         onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          print('$BannerAd failedToLoad: $error');
+          log('$BannerAd failedToLoad: $error');
           ad.dispose();
         },
-        onAdOpened: (Ad ad) => print('$BannerAd onAdOpened.'),
-        onAdClosed: (Ad ad) => print('$BannerAd onAdClosed.'),
+        onAdOpened: (Ad ad) => log('$BannerAd onAdOpened.'),
+        onAdClosed: (Ad ad) => log('$BannerAd onAdClosed.'),
       ),
     );
     return banner.load();
