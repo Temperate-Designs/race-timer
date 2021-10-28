@@ -1,0 +1,29 @@
+name: swn-race-timer
+version: 1.0.0
+summary: A simple race timer
+description: |
+  A simple race timer with support for individual, group, and mass starts.
+
+confinement: strict
+base: core18
+grade: stable
+
+slots:
+  dbus-swn-race-timer:
+    interface: dbus
+    bus: session
+    name: com.temperatedesigns.swn_race_timer
+
+apps:
+  swn-race-timer-app:
+    command: swn_race_timer
+    extensions: [flutter-master]
+    plugs:
+    - network
+    slots:
+      - dbus-swn-race-timer
+parts:
+  swn-race-timer-app:
+    source: .
+    plugin: flutter
+    flutter-target: lib/main.dart
