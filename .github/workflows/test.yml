@@ -1,0 +1,73 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  release:
+    types:
+      - created
+
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Run tests
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '12.x'
+      - uses: subosito/flutter-action@v1
+        with:
+          flutter-version: '2.5.3'
+      - run: flutter pub get
+      - run: flutter test
+
+  linux:
+    name: Build linux Package
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+      - name: Install Flutter
+        run: |
+          sudo snap install flutter --classic
+          flutter config --enable-linux-desktop
+          flutter upgrade
+          yes | flutter doctor --android-licenses
+          flutter doctor -v
+      - name: run `flutter build linux`
+        run: flutter build linux --verbose
+      - name: Store build artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: swn-race-timer-linux
+          path: build/linux/x64/release/bundle
+
+  snap:
+    name: Build snap
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+      - name: Install snapcraft
+        run: |
+          set -x
+          sudo snap install snapcraft --classic
+          sudo snap install multipass
+          sudo usermod --append --groups lxd ${USER}
+          echo /snap/bin >> ${GITHUB_PATH}
+          sudo chown root:root /
+          sudo /snap/bin/lxd init --auto
+      - name: Build snap
+        run: sudo snapcraft --use-lxd
+      - name: Store build artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: swn-race-timer-snap
+          path: '*.snap'
