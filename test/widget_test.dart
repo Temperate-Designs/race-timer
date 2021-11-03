@@ -7,12 +7,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:swn_race_timer/race_app.dart';
+import 'package:swn_race_timer/swn_race_timer.dart';
 
 void main() {
   testWidgets('Add Racer test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const RaceApp());
+    await tester.pumpWidget(const SWNRaceTimer());
 
     // Verify that our counter starts at 0.
     expect(find.text('Individual'), findsOneWidget);
