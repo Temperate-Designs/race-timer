@@ -1,5 +1,9 @@
+import 'dart:developer';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:swn_race_timer/edit_racer.dart';
 import 'package:swn_race_timer/race_details.dart';
 
@@ -12,9 +16,53 @@ class SWNRaceTimer extends StatefulWidget {
 
 class _SWNRaceTimerState extends State<SWNRaceTimer> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  static const AdRequest request = AdRequest();
+
+  BannerAd? _ad;
+  bool _isAdLoaded = false;
+
+  Future<void> _createAnchoredBanner(BuildContext context) async {
+    final AnchoredAdaptiveBannerAdSize? size =
+        await AdSize.getAnchoredAdaptiveBannerAdSize(
+      Orientation.portrait,
+      MediaQuery.of(context).size.width.truncate(),
+    );
+
+    if (size == null) {
+      log('Unable to get height of anchored banner.');
+      return;
+    }
+
+    final BannerAd banner = BannerAd(
+      size: size,
+      request: request,
+      adUnitId: kDebugMode
+          ? 'ca-app-pub-3940256099942544/6300978111'
+          : 'ca-app-pub-4328959315579213/8369004752',
+      listener: BannerAdListener(
+        onAdLoaded: (Ad ad) {
+          log('$BannerAd loaded.');
+          setState(() {
+            _ad = ad as BannerAd?;
+          });
+        },
+        onAdFailedToLoad: (Ad ad, LoadAdError error) {
+          log('$BannerAd failedToLoad: $error');
+          ad.dispose();
+        },
+        onAdOpened: (Ad ad) => log('$BannerAd onAdOpened.'),
+        onAdClosed: (Ad ad) => log('$BannerAd onAdClosed.'),
+      ),
+    );
+    return banner.load();
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (!_isAdLoaded) {
+      _isAdLoaded = true;
+      _createAnchoredBanner(context);
+    }
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
@@ -64,13 +112,13 @@ class _SWNRaceTimerState extends State<SWNRaceTimer> {
             Column(
               mainAxisSize: MainAxisSize.max,
               children: [
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 70,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFEEEEEE),
+                if (_ad != null)
+                  Container(
+                    child: AdWidget(ad: _ad!),
+                    width: _ad!.size.width.toDouble(),
+                    height: _ad!.size.height.toDouble(),
+                    alignment: Alignment.center,
                   ),
-                ),
                 const Padding(
                   padding: EdgeInsetsDirectional.fromSTEB(16, 16, 16, 16),
                   child: Text(
@@ -255,5 +303,11 @@ class _SWNRaceTimerState extends State<SWNRaceTimer> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _ad?.dispose();
   }
 }
