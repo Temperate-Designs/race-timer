@@ -33,6 +33,14 @@ class RaceGlobalStateData {
           name: 'Kwage Trail Time Trial',
           date: DateTime.now(),
         ),
+        Race(
+          name: 'Raoundabout and back',
+          date: DateTime.parse('2021-02-02 17:42'),
+        ),
+        Race(
+          name: 'Perimeter to cemetary',
+          date: DateTime.parse('2021-03-03 12:33'),
+        )
       ];
     } else {
       races = [];
