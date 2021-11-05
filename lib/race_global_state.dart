@@ -24,7 +24,25 @@ class RaceGlobalState extends InheritedWidget {
 }
 
 class RaceGlobalStateData {
-  final List<Race> races = [];
+  late final List<Race> races;
+
+  RaceGlobalStateData() {
+    if (kDebugMode) {
+      races = [
+        Race(
+          name: 'Kwage Trail Time Trial',
+          date: DateTime.now(),
+        ),
+      ];
+    } else {
+      races = [];
+    }
+  }
 }
 
-class Race {}
+class Race {
+  String name;
+  DateTime date;
+
+  Race({required this.name, required this.date});
+}
