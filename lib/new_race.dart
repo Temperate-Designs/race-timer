@@ -31,7 +31,7 @@ class _NewRaceWidgetState extends State<NewRaceWidget> {
       appBar: AppBar(
         backgroundColor: Colors.blue,
         automaticallyImplyLeading: true,
-        title: Text(
+        title: const Text(
           'New Race',
           style: TextStyle(fontSize: 24,),
         ),
@@ -45,16 +45,16 @@ class _NewRaceWidgetState extends State<NewRaceWidget> {
           await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => EditRacerWidget(),
+              builder: (context) => const EditRacerWidget(),
             ),
           );
         },
         backgroundColor: Colors.blue,
-        icon: Icon(
+        icon: const Icon(
           Icons.add,
         ),
         elevation: 8,
-        label: Text(
+        label: const Text(
           'New Racer',
         ),
       ),
