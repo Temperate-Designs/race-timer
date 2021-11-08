@@ -1,6 +1,13 @@
+import 'dart:developer';
+import 'dart:ui';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:provider/provider.dart';
 import 'package:swn_race_timer/edit_racer.dart';
 import 'package:swn_race_timer/race.dart';
+import 'package:swn_race_timer/race_state_model.dart';
 
 class NewRaceWidget extends StatefulWidget {
   const NewRaceWidget({Key? key}) : super(key: key);
@@ -11,12 +18,57 @@ class NewRaceWidget extends StatefulWidget {
 
 class _NewRaceWidgetState extends State<NewRaceWidget> {
   TextEditingController? textController;
-  bool? switchListTileValue1;
-  bool? switchListTileValue2;
-  bool? switchListTileValue3;
-  bool _loadingButton1 = false;
-  bool _loadingButton2 = false;
+  bool switchIndividual = true;
+  bool switchGroup = false;
+  bool switchMass = false;
+  bool _saveRaceButton = false;
+  bool _cancelNewRaceButton = false;
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  static const AdRequest request = AdRequest();
+  BannerAd? _ad;
+  bool _isAdLoaded = false;
+
+  Future<void> _createAnchoredBanner(BuildContext context) async {
+    final AnchoredAdaptiveBannerAdSize? size =
+        await AdSize.getAnchoredAdaptiveBannerAdSize(
+      Orientation.portrait,
+      MediaQuery.of(context).size.width.truncate(),
+    );
+
+    if (size == null) {
+      log('Unable to get height of anchored banner.');
+      return;
+    }
+
+    final BannerAd banner = BannerAd(
+      size: size,
+      request: request,
+      adUnitId: kDebugMode
+          ? 'ca-app-pub-3940256099942544/6300978111'
+          : 'ca-app-pub-4328959315579213/8369004752',
+      listener: BannerAdListener(
+        onAdLoaded: (Ad ad) {
+          log('$BannerAd loaded.');
+          setState(() {
+            _ad = ad as BannerAd?;
+          });
+        },
+        onAdFailedToLoad: (Ad ad, LoadAdError error) {
+          log('$BannerAd failedToLoad: $error');
+          ad.dispose();
+        },
+        onAdOpened: (Ad ad) => log('$BannerAd onAdOpened.'),
+        onAdClosed: (Ad ad) => log('$BannerAd onAdClosed.'),
+      ),
+    );
+    return banner.load();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _ad?.dispose();
+  }
 
   @override
   void initState() {
@@ -26,310 +78,377 @@ class _NewRaceWidgetState extends State<NewRaceWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: scaffoldKey,
-      appBar: AppBar(
-        backgroundColor: Colors.blue,
-        automaticallyImplyLeading: true,
-        title: const Text(
-          'New Race',
-          style: TextStyle(fontSize: 24,),
-        ),
-        actions: [],
-        centerTitle: true,
-        elevation: 4,
-      ),
-      backgroundColor: Color(0xFFF5F5F5),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () async {
-          await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const EditRacerWidget(),
+    if (!_isAdLoaded) {
+      _isAdLoaded = true;
+      _createAnchoredBanner(context);
+    }
+    return Consumer<RaceStateModel>(
+      builder: (BuildContext context, value, Widget? child) {
+        return Scaffold(
+          key: scaffoldKey,
+          appBar: AppBar(
+            backgroundColor: Colors.blue,
+            automaticallyImplyLeading: true,
+            title: const Text(
+              'New Race',
+              style: TextStyle(
+                fontSize: 24,
+              ),
             ),
-          );
-        },
-        backgroundColor: Colors.blue,
-        icon: const Icon(
-          Icons.add,
-        ),
-        elevation: 8,
-        label: const Text(
-          'New Racer',
-        ),
-      ),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Image.network(
-              'https://picsum.photos/id/908/600/?blur',
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height * 1,
-              fit: BoxFit.cover,
+            actions: [],
+            centerTitle: true,
+            elevation: 4,
+          ),
+          backgroundColor: const Color(0xFFF5F5F5),
+          floatingActionButton: FloatingActionButton.extended(
+            onPressed: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const EditRacerWidget(),
+                ),
+              );
+            },
+            backgroundColor: Colors.blue,
+            icon: const Icon(
+              Icons.add,
             ),
-            Align(
-              alignment: AlignmentDirectional(0, 0),
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Container(
+            elevation: 8,
+            label: const Text(
+              'New Racer',
+            ),
+          ),
+          body: SafeArea(
+            child: Stack(
+              children: [
+                ImageFiltered(
+                  imageFilter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+                  child: Image.asset(
+                    'assets/images/background.jpg',
                     width: MediaQuery.of(context).size.width,
-                    height: 70,
-                    decoration: BoxDecoration(
-                      color: Color(0xFFEEEEEE),
-                    ),
+                    height: MediaQuery.of(context).size.height * 1,
+                    fit: BoxFit.cover,
                   ),
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    decoration: BoxDecoration(
-                      color: Color(0x80EEEEEE),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(8, 0, 8, 0),
-                          child: Text(
-                            'Race Name',
-                            style: TextStyle(fontSize: 16,),
-                          ),
+                ),
+                Align(
+                  alignment: const AlignmentDirectional(0, 0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      if (_ad != null)
+                        Container(
+                          child: AdWidget(ad: _ad!),
+                          width: _ad!.size.width.toDouble(),
+                          height: _ad!.size.height.toDouble(),
+                          alignment: Alignment.center,
                         ),
-                        Expanded(
-                          child: TextFormField(
-                            controller: textController,
-                            obscureText: false,
-                            decoration: InputDecoration(
-                              hintText: 'Please enter the race name',
-                              hintStyle: TextStyle(fontSize: 16,),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Color(0x00000000),
-                                  width: 1,
-                                ),
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(4.0),
-                                  topRight: Radius.circular(4.0),
-                                ),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Color(0x00000000),
-                                  width: 1,
-                                ),
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(4.0),
-                                  topRight: Radius.circular(4.0),
-                                ),
-                              ),
-                            ),
-                            style: TextStyle(fontSize: 16,),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    decoration: BoxDecoration(
-                      color: Color(0x80EEEEEE),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(8, 0, 8, 0),
-                          child: Text(
-                            'Race Type',
-                            style: TextStyle(fontSize: 16,),
-                          ),
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        decoration: const BoxDecoration(
+                          color: Color(0xD0FFFFFF),
                         ),
-                        Column(
+                        child: Row(
                           mainAxisSize: MainAxisSize.max,
                           children: [
-                            Container(
-                              width: 200,
-                              child: Padding(
-                                padding:
-                                    EdgeInsetsDirectional.fromSTEB(4, 0, 0, 0),
-                                child: SwitchListTile(
-                                  value: switchListTileValue1 ??= true,
-                                  onChanged: (newValue) => setState(
-                                      () => switchListTileValue1 = newValue),
-                                  title: Text(
-                                    'Individual',
-                                    style: TextStyle(fontSize: 16,),
-                                  ),
-                                  tileColor: Color(0xFFF5F5F5),
-                                  dense: false,
-                                  controlAffinity:
-                                      ListTileControlAffinity.trailing,
+                            const Padding(
+                              padding:
+                                  EdgeInsetsDirectional.fromSTEB(8, 0, 8, 0),
+                              child: Text(
+                                'Race Name',
+                                style: TextStyle(
+                                  fontSize: 16,
                                 ),
                               ),
                             ),
-                            Container(
-                              width: 200,
-                              child: Padding(
-                                padding:
-                                    EdgeInsetsDirectional.fromSTEB(4, 0, 0, 0),
-                                child: SwitchListTile(
-                                  value: switchListTileValue2 ??= true,
-                                  onChanged: (newValue) => setState(
-                                      () => switchListTileValue2 = newValue),
-                                  title: Text(
-                                    'Group',
-                                    style: TextStyle(fontSize: 16,),
+                            Expanded(
+                              child: TextFormField(
+                                controller: textController,
+                                obscureText: false,
+                                decoration: const InputDecoration(
+                                  hintText: 'Please enter the race name',
+                                  hintStyle: TextStyle(
+                                    fontSize: 16,
                                   ),
-                                  tileColor: Color(0xFFF5F5F5),
-                                  dense: false,
-                                  controlAffinity:
-                                      ListTileControlAffinity.trailing,
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color(0x00000000),
+                                      width: 1,
+                                    ),
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(4.0),
+                                      topRight: Radius.circular(4.0),
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color(0x00000000),
+                                      width: 1,
+                                    ),
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(4.0),
+                                      topRight: Radius.circular(4.0),
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                            Container(
-                              width: 200,
-                              child: Padding(
-                                padding:
-                                    EdgeInsetsDirectional.fromSTEB(4, 0, 0, 0),
-                                child: SwitchListTile(
-                                  value: switchListTileValue3 ??= true,
-                                  onChanged: (newValue) => setState(
-                                      () => switchListTileValue3 = newValue),
-                                  title: Text(
-                                    'Mass',
-                                    style: TextStyle(fontSize: 16,),
-                                  ),
-                                  tileColor: Color(0xFFF5F5F5),
-                                  dense: false,
-                                  controlAffinity:
-                                      ListTileControlAffinity.trailing,
+                                style: const TextStyle(
+                                  fontSize: 16,
                                 ),
                               ),
                             )
                           ],
-                        )
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsetsDirectional.fromSTEB(0, 8, 0, 4),
-                    child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      decoration: BoxDecoration(
-                        color: Color(0x00EEEEEE),
+                        ),
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(4, 0, 4, 0),
-                            child: TextButton(
-                              onPressed: () async {
-                                setState(() => _loadingButton1 = true);
-                                try {
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        decoration: const BoxDecoration(
+                          color: Color(0xD0FFFFFF),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            const Padding(
+                              padding:
+                                  EdgeInsetsDirectional.fromSTEB(8, 0, 8, 0),
+                              child: Text(
+                                'Race Type',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                            Column(
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                SizedBox(
+                                  width: 200,
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsetsDirectional.fromSTEB(
+                                            4, 0, 0, 0),
+                                    child: SwitchListTile(
+                                      value: switchIndividual,
+                                      onChanged: (newValue) {
+                                        switchIndividual = newValue;
+                                        if (switchIndividual) {
+                                          setState(() {
+                                            switchGroup = false;
+                                            switchMass = false;
+                                          });
+                                        }
+                                      },
+                                      title: const Text(
+                                        'Individual',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      tileColor: const Color(0xFFF5F5F5),
+                                      dense: false,
+                                      controlAffinity:
+                                          ListTileControlAffinity.trailing,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 200,
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsetsDirectional.fromSTEB(
+                                            4, 0, 0, 0),
+                                    child: SwitchListTile(
+                                      value: switchGroup,
+                                      onChanged: (newValue) {
+                                        switchGroup = newValue;
+                                        if (switchGroup) {
+                                          setState(() {
+                                            switchIndividual = false;
+                                            switchMass = false;
+                                          });
+                                        }
+                                      },
+                                      title: const Text(
+                                        'Group',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      tileColor: const Color(0xFFF5F5F5),
+                                      dense: false,
+                                      controlAffinity:
+                                          ListTileControlAffinity.trailing,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 200,
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsetsDirectional.fromSTEB(
+                                            4, 0, 0, 0),
+                                    child: SwitchListTile(
+                                      value: switchMass,
+                                      onChanged: (newValue) {
+                                        switchMass = newValue;
+                                        if (switchMass) {
+                                          setState(() {
+                                            switchIndividual = false;
+                                            switchGroup = false;
+                                          });
+                                        }
+                                      },
+                                      title: const Text(
+                                        'Mass',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      tileColor: const Color(0xFFF5F5F5),
+                                      dense: false,
+                                      controlAffinity:
+                                          ListTileControlAffinity.trailing,
+                                    ),
+                                  ),
+                                )
+                              ],
+                            )
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding:
+                            const EdgeInsetsDirectional.fromSTEB(0, 8, 0, 4),
+                        child: Container(
+                          padding: const EdgeInsets.all(8.0),
+                          decoration: const BoxDecoration(
+                            color: Color(0xD0FFFFFF),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsetsDirectional.fromSTEB(
+                                    4, 0, 4, 0),
+                                child: TextButton(
+                                  style: TextButton.styleFrom(
+                                    primary: Colors.white,
+                                    backgroundColor: Colors.green,
+                                  ),
+                                  onPressed: () async {
+                                    setState(() => _saveRaceButton = true);
+                                    try {
+                                      await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const RaceWidget(),
+                                        ),
+                                      );
+                                    } finally {
+                                      setState(() => _saveRaceButton = false);
+                                    }
+                                  },
+                                  child: const Text('Done'),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsetsDirectional.fromSTEB(
+                                    4, 0, 4, 0),
+                                child: TextButton(
+                                  style: TextButton.styleFrom(
+                                    primary: Colors.white,
+                                    backgroundColor: Colors.blue,
+                                  ),
+                                  onPressed: () async {
+                                    setState(() => _cancelNewRaceButton = true);
+                                    try {
+                                      Navigator.pop(context);
+                                    } finally {
+                                      setState(
+                                          () => _cancelNewRaceButton = false);
+                                    }
+                                  },
+                                  child: const Text('Cancel'),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: ListView(
+                          padding: EdgeInsets.zero,
+                          scrollDirection: Axis.vertical,
+                          children: [
+                            Card(
+                              clipBehavior: Clip.antiAliasWithSaveLayer,
+                              color: const Color(0x00F5F5F5),
+                              child: InkWell(
+                                onTap: () async {
                                   await Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => RaceWidget(),
+                                      builder: (context) =>
+                                          const EditRacerWidget(),
                                     ),
                                   );
-                                } finally {
-                                  setState(() => _loadingButton1 = false);
-                                }
-                              },
-                              child: Text('Done'),                              ),
-                            ),
-                          Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(4, 0, 4, 0),
-                            child: TextButton(
-                              onPressed: () async {
-                                setState(() => _loadingButton2 = true);
-                                try {
-                                  Navigator.pop(context);
-                                } finally {
-                                  setState(() => _loadingButton2 = false);
-                                }
-                              },
-                              child: Text('Cancel'),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: ListView(
-                      padding: EdgeInsets.zero,
-                      scrollDirection: Axis.vertical,
-                      children: [
-                        Card(
-                          clipBehavior: Clip.antiAliasWithSaveLayer,
-                          color: Color(0x00F5F5F5),
-                          child: InkWell(
-                            onTap: () async {
-                              await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => EditRacerWidget(),
+                                },
+                                child: const ListTile(
+                                  title: Text(
+                                    'Racer Joe',
+                                  ),
+                                  subtitle: Text(
+                                    'Group 1, Bib: 0001',
+                                  ),
+                                  trailing: Icon(
+                                    Icons.arrow_forward_ios,
+                                    color: Color(0xFF303030),
+                                    size: 20,
+                                  ),
+                                  tileColor: Color(0xFFF5F5F5),
+                                  dense: false,
                                 ),
-                              );
-                            },
-                            child: const ListTile(
-                              title: Text(
-                                'Racer Joe',
                               ),
-                              subtitle: Text(
-                                'Group 1, Bib: 0001',
-                              ),
-                              trailing: Icon(
-                                Icons.arrow_forward_ios,
-                                color: Color(0xFF303030),
-                                size: 20,
-                              ),
-                              tileColor: Color(0xFFF5F5F5),
-                              dense: false,
                             ),
-                          ),
+                            Card(
+                              clipBehavior: Clip.antiAliasWithSaveLayer,
+                              color: const Color(0x00F5F5F5),
+                              child: InkWell(
+                                onTap: () async {
+                                  await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => EditRacerWidget(),
+                                    ),
+                                  );
+                                },
+                                child: const ListTile(
+                                  title: Text(
+                                    'Racer Jill',
+                                  ),
+                                  subtitle: Text(
+                                    'Group 1, Bib: 0002',
+                                  ),
+                                  trailing: Icon(
+                                    Icons.arrow_forward_ios,
+                                    color: Color(0xFF303030),
+                                    size: 20,
+                                  ),
+                                  tileColor: Color(0xFFF5F5F5),
+                                  dense: false,
+                                ),
+                              ),
+                            )
+                          ],
                         ),
-                        Card(
-                          clipBehavior: Clip.antiAliasWithSaveLayer,
-                          color: const Color(0x00F5F5F5),
-                          child: InkWell(
-                            onTap: () async {
-                              await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => EditRacerWidget(),
-                                ),
-                              );
-                            },
-                            child: const ListTile(
-                              title: Text(
-                                'Racer Jill',
-                              ),
-                              subtitle: Text(
-                                'Group 1, Bib: 0002',
-                              ),
-                              trailing: Icon(
-                                Icons.arrow_forward_ios,
-                                color: Color(0xFF303030),
-                                size: 20,
-                              ),
-                              tileColor: Color(0xFFF5F5F5),
-                              dense: false,
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            )
-          ],
-        ),
-      ),
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

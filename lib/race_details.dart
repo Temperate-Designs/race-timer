@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -91,11 +92,14 @@ class _RaceDetailsWidgetState extends State<RaceDetailsWidget> {
           body: SafeArea(
             child: Stack(
               children: [
-                Image.asset(
-                  'assets/images/background.jpg',
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height * 1,
-                  fit: BoxFit.cover,
+                ImageFiltered(
+                  imageFilter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+                  child: Image.asset(
+                    'assets/images/background.jpg',
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height * 1,
+                    fit: BoxFit.cover,
+                  ),
                 ),
                 Column(
                   mainAxisSize: MainAxisSize.max,

@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:swn_race_timer/edit_racer.dart';
+import 'package:swn_race_timer/new_race.dart';
 import 'package:swn_race_timer/race_details.dart';
 import 'package:swn_race_timer/race_state_model.dart';
 
@@ -71,7 +73,6 @@ class _SWNRaceTimerState extends State<SWNRaceTimer> {
       _isAdLoaded = true;
       _createAnchoredBanner(context);
     }
-    log('The context is $context');
     return Consumer<RaceStateModel>(builder: (context, model, child) {
       return Scaffold(
         key: scaffoldKey,
@@ -93,7 +94,7 @@ class _SWNRaceTimerState extends State<SWNRaceTimer> {
             await Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const EditRacerWidget(),
+                builder: (context) => const NewRaceWidget(),
               ),
             );
           },
@@ -113,11 +114,14 @@ class _SWNRaceTimerState extends State<SWNRaceTimer> {
         body: SafeArea(
           child: Stack(
             children: [
-              Image.asset(
-                'assets/images/background.jpg',
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height * 1,
-                fit: BoxFit.cover,
+              ImageFiltered(
+                imageFilter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+                child: Image.asset(
+                  'assets/images/background.jpg',
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height * 1,
+                  fit: BoxFit.cover,
+                ),
               ),
               Column(
                 mainAxisSize: MainAxisSize.max,
