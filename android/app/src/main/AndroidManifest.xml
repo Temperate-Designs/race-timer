@@ -3,7 +3,8 @@
 
     <application
         android:icon="@mipmap/launcher_icon"
-        android:label="Southwest Nordic Race Timer">
+        android:label="Southwest Nordic Race Timer"
+        android:allowBackup="true">
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
