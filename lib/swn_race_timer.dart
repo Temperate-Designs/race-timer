@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:ui';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -20,6 +21,7 @@ class SWNRaceTimer extends StatefulWidget {
 
 class _SWNRaceTimerState extends State<SWNRaceTimer> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
   static const AdRequest request = AdRequest();
   BannerAd? _ad;
   bool _isAdLoaded = false;
@@ -72,153 +74,179 @@ class _SWNRaceTimerState extends State<SWNRaceTimer> {
       _isAdLoaded = true;
       _createAnchoredBanner(context);
     }
-    return Consumer<RaceStateModel>(builder: (context, model, child) {
-      return Scaffold(
-        key: scaffoldKey,
-        appBar: AppBar(
-          backgroundColor: Colors.blue,
-          iconTheme: const IconThemeData(color: Colors.blue),
-          automaticallyImplyLeading: true,
-          title: const Text(
-            'SWN Race Timer',
-            style: TextStyle(fontSize: 24),
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () => throw Exception('Testcrash'),
-              child: const Text('Crash'),
-            )
-          ],
-          centerTitle: true,
-          elevation: 4,
-        ),
-        backgroundColor: const Color(0xFFF5F5F5),
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: () async {
-            await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const NewRaceWidget(),
-              ),
-            );
-          },
-          backgroundColor: Colors.blue,
-          icon: const Icon(
-            Icons.add,
-          ),
-          elevation: 8,
-          label: const Text(
-            'New Race',
-            style: TextStyle(
-              fontFamily: 'Poppins',
-              color: Colors.white,
+    return FutureBuilder(
+      future: _initialization,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Text(
+              'Error: ${snapshot.error}',
+              style: const TextStyle(color: Colors.red),
             ),
-          ),
-        ),
-        body: SafeArea(
-          child: Stack(
-            children: [
-              ImageFiltered(
-                imageFilter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
-                child: Image.asset(
-                  'assets/images/background.jpg',
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height * 1,
-                  fit: BoxFit.cover,
+          );
+        }
+
+        if (snapshot.connectionState == ConnectionState.done) {
+          return Consumer<RaceStateModel>(
+            builder: (context, model, child) {
+              return Scaffold(
+                key: scaffoldKey,
+                appBar: AppBar(
+                  backgroundColor: Colors.blue,
+                  iconTheme: const IconThemeData(color: Colors.blue),
+                  automaticallyImplyLeading: true,
+                  title: const Text(
+                    'SWN Race Timer',
+                    style: TextStyle(fontSize: 24),
+                  ),
+                  actions: [
+                    ElevatedButton(
+                      onPressed: () => throw Exception('Testcrash'),
+                      child: const Text('Crash'),
+                    )
+                  ],
+                  centerTitle: true,
+                  elevation: 4,
                 ),
-              ),
-              Column(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  if (_ad != null)
-                    Container(
-                      child: AdWidget(ad: _ad!),
-                      width: _ad!.size.width.toDouble(),
-                      height: _ad!.size.height.toDouble(),
-                      alignment: Alignment.center,
-                    ),
-                  const Padding(
-                    padding: EdgeInsetsDirectional.fromSTEB(16, 16, 16, 16),
-                    child: Text(
-                      'Past Races',
-                      textAlign: TextAlign.start,
-                      style: TextStyle(fontSize: 24),
+                backgroundColor: const Color(0xFFF5F5F5),
+                floatingActionButton: FloatingActionButton.extended(
+                  onPressed: () async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const NewRaceWidget(),
+                      ),
+                    );
+                  },
+                  backgroundColor: Colors.blue,
+                  icon: const Icon(
+                    Icons.add,
+                  ),
+                  elevation: 8,
+                  label: const Text(
+                    'New Race',
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      color: Colors.white,
                     ),
                   ),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: model.numberOfRaces,
-                      itemBuilder: (context, index) {
-                        return Card(
-                          clipBehavior: Clip.antiAliasWithSaveLayer,
-                          color: const Color(0x80F5F5F5),
-                          elevation: 2,
-                          child: InkWell(
-                            onTap: () async {
-                              await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      RaceDetailsWidget(raceIndex: index),
-                                ),
-                              );
-                            },
-                            child: Slidable(
-                              actionPane: const SlidableScrollActionPane(),
-                              secondaryActions: [
-                                IconSlideAction(
-                                  caption: 'Delete',
-                                  color: Colors.blue,
-                                  icon: Icons.delete,
-                                  onTap: () {
-                                    print('SlidableActionWidget pressed ...');
-                                  },
-                                ),
-                                IconSlideAction(
-                                  caption: 'Share',
-                                  color: Colors.blue,
-                                  icon: Icons.share,
-                                  onTap: () {
-                                    print('SlidableActionWidget pressed ...');
-                                  },
-                                )
-                              ],
-                              child: ListTile(
-                                title: Text(
-                                  model.races[index].name,
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                  ),
-                                ),
-                                subtitle: Text(
-                                  '${DateFormat('d LLL y').format(model.races[index].date!)}\n'
-                                  '${model.races[index].racers.length} racers',
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                  ),
-                                ),
-                                trailing: const Icon(
-                                  Icons.arrow_forward_ios,
-                                  color: Color(0xFF303030),
-                                  size: 20,
-                                ),
-                                tileColor: const Color(0xFFF5F5F5),
-                                dense: false,
-                              ),
+                ),
+                body: SafeArea(
+                  child: Stack(
+                    children: [
+                      ImageFiltered(
+                        imageFilter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+                        child: Image.asset(
+                          'assets/images/background.jpg',
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.height * 1,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      Column(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          if (_ad != null)
+                            Container(
+                              child: AdWidget(ad: _ad!),
+                              width: _ad!.size.width.toDouble(),
+                              height: _ad!.size.height.toDouble(),
+                              alignment: Alignment.center,
+                            ),
+                          const Padding(
+                            padding:
+                                EdgeInsetsDirectional.fromSTEB(16, 16, 16, 16),
+                            child: Text(
+                              'Past Races',
+                              textAlign: TextAlign.start,
+                              style: TextStyle(fontSize: 24),
                             ),
                           ),
-                        );
-                      },
-                      padding: EdgeInsets.zero,
-                      scrollDirection: Axis.vertical,
-                    ),
-                  )
-                ],
-              )
-            ],
-          ),
-        ),
-      );
-    });
+                          Expanded(
+                            child: ListView.builder(
+                              itemCount: model.numberOfRaces,
+                              itemBuilder: (context, index) {
+                                return Card(
+                                  clipBehavior: Clip.antiAliasWithSaveLayer,
+                                  color: const Color(0x80F5F5F5),
+                                  elevation: 2,
+                                  child: InkWell(
+                                    onTap: () async {
+                                      await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              RaceDetailsWidget(
+                                                  raceIndex: index),
+                                        ),
+                                      );
+                                    },
+                                    child: Slidable(
+                                      actionPane:
+                                          const SlidableScrollActionPane(),
+                                      secondaryActions: [
+                                        IconSlideAction(
+                                          caption: 'Delete',
+                                          color: Colors.blue,
+                                          icon: Icons.delete,
+                                          onTap: () {
+                                            print(
+                                                'SlidableActionWidget pressed ...');
+                                          },
+                                        ),
+                                        IconSlideAction(
+                                          caption: 'Share',
+                                          color: Colors.blue,
+                                          icon: Icons.share,
+                                          onTap: () {
+                                            print(
+                                                'SlidableActionWidget pressed ...');
+                                          },
+                                        )
+                                      ],
+                                      child: ListTile(
+                                        title: Text(
+                                          model.races[index].name,
+                                          style: const TextStyle(
+                                            fontSize: 20,
+                                          ),
+                                        ),
+                                        subtitle: Text(
+                                          '${DateFormat('d LLL y').format(model.races[index].date!)}\n'
+                                          '${model.races[index].racers.length} racers',
+                                          style: const TextStyle(
+                                            fontSize: 20,
+                                          ),
+                                        ),
+                                        trailing: const Icon(
+                                          Icons.arrow_forward_ios,
+                                          color: Color(0xFF303030),
+                                          size: 20,
+                                        ),
+                                        tileColor: const Color(0xFFF5F5F5),
+                                        dense: false,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                              padding: EdgeInsets.zero,
+                              scrollDirection: Axis.vertical,
+                            ),
+                          )
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+        }
+
+        // FIXME: This is a hack to get the app to render before the banner is loaded.
+        return const AlertDialog(title: Text('Loading'));
+      },
+    );
   }
 }
