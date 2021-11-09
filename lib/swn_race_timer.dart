@@ -7,7 +7,6 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:swn_race_timer/edit_racer.dart';
 import 'package:swn_race_timer/new_race.dart';
 import 'package:swn_race_timer/race_details.dart';
 import 'package:swn_race_timer/race_state_model.dart';
@@ -84,7 +83,12 @@ class _SWNRaceTimerState extends State<SWNRaceTimer> {
             'SWN Race Timer',
             style: TextStyle(fontSize: 24),
           ),
-          actions: const [],
+          actions: [
+            ElevatedButton(
+              onPressed: () => throw Exception('Testcrash'),
+              child: const Text('Crash'),
+            )
+          ],
           centerTitle: true,
           elevation: 4,
         ),
@@ -187,7 +191,7 @@ class _SWNRaceTimerState extends State<SWNRaceTimer> {
                                   ),
                                 ),
                                 subtitle: Text(
-                                  '${DateFormat('d LLL y').format(model.races[index].date)}\n'
+                                  '${DateFormat('d LLL y').format(model.races[index].date!)}\n'
                                   '${model.races[index].racers.length} racers',
                                   style: const TextStyle(
                                     fontSize: 20,

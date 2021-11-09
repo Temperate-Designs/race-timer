@@ -20,12 +20,19 @@ class RaceStateModel extends ChangeNotifier {
               startTime: DateTime.parse('2021-11-07 12:00:00'),
               finishTime: DateTime.parse('2021-11-07 12:30:00'),
             ),
-            Racer(name: "Bernadette Boon", bibNumber: 2,
+            Racer(
+              name: "Bernadette Boon",
+              bibNumber: 2,
               startTime: DateTime.parse('2021-11-07 12:00:00'),
-              finishTime: DateTime.parse('2021-11-07 12:25:23'),),
-            Racer(name: "Charlie Check", bibNumber: 3, groupNumber: 2,
+              finishTime: DateTime.parse('2021-11-07 12:25:23'),
+            ),
+            Racer(
+              name: "Charlie Check",
+              bibNumber: 3,
+              groupNumber: 2,
               startTime: DateTime.parse('2021-11-07 12:10:00'),
-              finishTime: DateTime.parse('2021-11-07 12:32:20'),),
+              finishTime: DateTime.parse('2021-11-07 12:32:20'),
+            ),
           ],
         ),
         Race(
@@ -57,15 +64,19 @@ class RaceStateModel extends ChangeNotifier {
 
 class Race {
   String name;
-  DateTime date;
+  DateTime? date;
   RaceType type;
   List<Racer> racers = [];
 
   Race(
-      {required this.name,
-      required this.date,
-      this.racers = const [],
-      this.type = RaceType.mass});
+      {this.name = 'unset',
+      this.date,
+      List<Racer>? racers,
+      this.type = RaceType.mass}) {
+    if (racers == null) {
+      this.racers = [];
+    }
+  }
 
   void addRacer(Racer racer) {
     if (racers.where((r) => r.bibNumber == racer.bibNumber).isNotEmpty) {

@@ -124,7 +124,7 @@ class _RaceDetailsWidgetState extends State<RaceDetailsWidget> {
                           mainAxisSize: MainAxisSize.max,
                           children: [
                             Text(
-                              'Date: ${DateFormat('d LLL y').format(model.races[widget.raceIndex].date)}',
+                              'Date: ${DateFormat('d LLL y').format(model.races[widget.raceIndex].date!)}',
                               textAlign: TextAlign.start,
                               style: const TextStyle(
                                 fontSize: 20,

@@ -17,12 +17,13 @@ class NewRaceWidget extends StatefulWidget {
 }
 
 class _NewRaceWidgetState extends State<NewRaceWidget> {
-  TextEditingController? textController;
+  late TextEditingController textController;
   bool switchIndividual = true;
   bool switchGroup = false;
   bool switchMass = false;
   bool _saveRaceButton = false;
   bool _cancelNewRaceButton = false;
+  Race newRace = Race();
   final scaffoldKey = GlobalKey<ScaffoldState>();
   static const AdRequest request = AdRequest();
   BannerAd? _ad;
@@ -65,15 +66,16 @@ class _NewRaceWidgetState extends State<NewRaceWidget> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-    _ad?.dispose();
-  }
-
-  @override
   void initState() {
     super.initState();
     textController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _ad?.dispose();
+    textController.dispose();
   }
 
   @override
@@ -102,12 +104,13 @@ class _NewRaceWidgetState extends State<NewRaceWidget> {
           backgroundColor: const Color(0xFFF5F5F5),
           floatingActionButton: FloatingActionButton.extended(
             onPressed: () async {
-              await Navigator.push(
+              final racer = await Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => const EditRacerWidget(),
                 ),
               );
+              newRace.addRacer(racer);
             },
             backgroundColor: Colors.blue,
             icon: const Icon(
@@ -161,7 +164,7 @@ class _NewRaceWidgetState extends State<NewRaceWidget> {
                               ),
                             ),
                             Expanded(
-                              child: TextFormField(
+                              child: TextField(
                                 controller: textController,
                                 obscureText: false,
                                 decoration: const InputDecoration(
@@ -335,16 +338,28 @@ class _NewRaceWidgetState extends State<NewRaceWidget> {
                                   ),
                                   onPressed: () async {
                                     setState(() => _saveRaceButton = true);
-                                    try {
-                                      await Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              const RaceWidget(),
-                                        ),
-                                      );
-                                    } finally {
-                                      setState(() => _saveRaceButton = false);
+                                    if (textController.text.isEmpty) {
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return const AlertDialog(
+                                              content: Text(
+                                                  'The race name cannot be empty'),
+                                            );
+                                          });
+                                    } else {
+                                      newRace.name = textController.text;
+                                      try {
+                                        await Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                const RaceWidget(),
+                                          ),
+                                        );
+                                      } finally {
+                                        setState(() => _saveRaceButton = false);
+                                      }
                                     }
                                   },
                                   child: const Text('Done'),
@@ -375,70 +390,38 @@ class _NewRaceWidgetState extends State<NewRaceWidget> {
                         ),
                       ),
                       Expanded(
-                        child: ListView(
+                        child: ListView.builder(
                           padding: EdgeInsets.zero,
                           scrollDirection: Axis.vertical,
-                          children: [
-                            Card(
-                              clipBehavior: Clip.antiAliasWithSaveLayer,
-                              color: const Color(0x00F5F5F5),
-                              child: InkWell(
-                                onTap: () async {
-                                  await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const EditRacerWidget(),
-                                    ),
-                                  );
-                                },
-                                child: const ListTile(
-                                  title: Text(
-                                    'Racer Joe',
+                          itemCount: newRace.racers.length,
+                          itemBuilder: (context, index) => Card(
+                            clipBehavior: Clip.antiAliasWithSaveLayer,
+                            color: const Color(0x00F5F5F5),
+                            child: InkWell(
+                              onTap: () async {
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const EditRacerWidget(),
                                   ),
-                                  subtitle: Text(
-                                    'Group 1, Bib: 0001',
-                                  ),
-                                  trailing: Icon(
-                                    Icons.arrow_forward_ios,
-                                    color: Color(0xFF303030),
-                                    size: 20,
-                                  ),
-                                  tileColor: Color(0xFFF5F5F5),
-                                  dense: false,
+                                );
+                              },
+                              child: ListTile(
+                                title: Text(newRace.racers[index].name),
+                                subtitle: Text(
+                                  'Group ${newRace.racers[index].groupNumber}, Bib: 0001',
                                 ),
+                                trailing: const Icon(
+                                  Icons.arrow_forward_ios,
+                                  color: Color(0xFF303030),
+                                  size: 20,
+                                ),
+                                tileColor: const Color(0xFFF5F5F5),
+                                dense: false,
                               ),
                             ),
-                            Card(
-                              clipBehavior: Clip.antiAliasWithSaveLayer,
-                              color: const Color(0x00F5F5F5),
-                              child: InkWell(
-                                onTap: () async {
-                                  await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => EditRacerWidget(),
-                                    ),
-                                  );
-                                },
-                                child: const ListTile(
-                                  title: Text(
-                                    'Racer Jill',
-                                  ),
-                                  subtitle: Text(
-                                    'Group 1, Bib: 0002',
-                                  ),
-                                  trailing: Icon(
-                                    Icons.arrow_forward_ios,
-                                    color: Color(0xFF303030),
-                                    size: 20,
-                                  ),
-                                  tileColor: Color(0xFFF5F5F5),
-                                  dense: false,
-                                ),
-                              ),
-                            )
-                          ],
+                          ),
                         ),
                       )
                     ],

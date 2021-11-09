@@ -302,8 +302,10 @@ class _EditRacerWidgetState extends State<EditRacerWidget> {
                             child: TextButton.icon(
                               onPressed: () async {
                                 setState(() => _loadingButton1 = true);
+                                Racer racer = Racer(
+                                    name: 'Jim', bibNumber: 1, groupNumber: 1);
                                 try {
-                                  Navigator.pop(context);
+                                  Navigator.pop(context, racer);
                                 } finally {
                                   setState(() => _loadingButton1 = false);
                                 }
