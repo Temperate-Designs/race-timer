@@ -399,18 +399,19 @@ class _NewRaceWidgetState extends State<NewRaceWidget> {
                             color: const Color(0x00F5F5F5),
                             child: InkWell(
                               onTap: () async {
-                                await Navigator.push(
+                                Racer racer = await Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) =>
                                         const EditRacerWidget(),
                                   ),
                                 );
+                                newRace.racers[index] = racer;
                               },
                               child: ListTile(
                                 title: Text(newRace.racers[index].name),
                                 subtitle: Text(
-                                  'Group ${newRace.racers[index].groupNumber}, Bib: 0001',
+                                  'Group ${newRace.racers[index].groupNumber}, Bib: ${newRace.racers[index].bibNumber}',
                                 ),
                                 trailing: const Icon(
                                   Icons.arrow_forward_ios,

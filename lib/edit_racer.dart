@@ -15,9 +15,9 @@ class EditRacerWidget extends StatefulWidget {
 }
 
 class _EditRacerWidgetState extends State<EditRacerWidget> {
-  TextEditingController? textController1;
-  TextEditingController? textController2;
-  TextEditingController? textController3;
+  late TextEditingController racerNameTextController;
+  late TextEditingController textController2;
+  late TextEditingController textController3;
   bool _loadingButton1 = false;
   bool _loadingButton2 = false;
   final scaffoldKey = GlobalKey<ScaffoldState>();
@@ -70,7 +70,7 @@ class _EditRacerWidgetState extends State<EditRacerWidget> {
   @override
   void initState() {
     super.initState();
-    textController1 = TextEditingController();
+    racerNameTextController = TextEditingController();
     textController2 = TextEditingController();
     textController3 = TextEditingController();
   }
@@ -140,10 +140,10 @@ class _EditRacerWidgetState extends State<EditRacerWidget> {
                           ),
                           Expanded(
                             child: TextFormField(
-                              controller: textController1,
+                              controller: racerNameTextController,
                               obscureText: false,
                               decoration: const InputDecoration(
-                                hintText: '[Some hint text...]',
+                                hintText: 'Racer Name',
                                 hintStyle: TextStyle(
                                   fontSize: 20,
                                 ),
@@ -198,6 +198,7 @@ class _EditRacerWidgetState extends State<EditRacerWidget> {
                               controller: textController2,
                               obscureText: false,
                               decoration: const InputDecoration(
+                                // FIXME: Use last group number as hint.
                                 hintText: '[Some hint text...]',
                                 hintStyle: TextStyle(
                                   fontSize: 20,
@@ -253,6 +254,7 @@ class _EditRacerWidgetState extends State<EditRacerWidget> {
                               controller: textController3,
                               obscureText: false,
                               decoration: const InputDecoration(
+                                // FIXME: Use last bib number as hint.
                                 hintText: '[Some hint text...]',
                                 hintStyle: TextStyle(
                                   fontSize: 20,
@@ -302,14 +304,29 @@ class _EditRacerWidgetState extends State<EditRacerWidget> {
                             child: TextButton.icon(
                               onPressed: () async {
                                 setState(() => _loadingButton1 = true);
+                                if (racerNameTextController.text.isEmpty) {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return const AlertDialog(
+                                          content: Text(
+                                              'The racer name cannot be empty'),
+                                        );
+                                      });
+                                  return;
+                                }
+                                // FIXME: Verify bib and group numbers.
                                 Racer racer = Racer(
-                                    name: 'Jim', bibNumber: 1, groupNumber: 1);
+                                    name: racerNameTextController.text,
+                                    bibNumber: 1,
+                                    groupNumber: 1);
                                 try {
                                   Navigator.pop(context, racer);
                                 } finally {
                                   setState(() => _loadingButton1 = false);
                                 }
                               },
+                              // FIXME: Fix button background.
                               label: const Text('Save'),
                               icon: const Icon(
                                 Icons.save,
