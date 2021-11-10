@@ -17,12 +17,14 @@ class RaceStateModel extends ChangeNotifier {
             Racer(
               name: "Anthony Adams",
               bibNumber: 1,
+              groupNumber: 1,
               startTime: DateTime.parse('2021-11-07 12:00:00'),
               finishTime: DateTime.parse('2021-11-07 12:30:00'),
             ),
             Racer(
               name: "Bernadette Boon",
               bibNumber: 2,
+              groupNumber: 1,
               startTime: DateTime.parse('2021-11-07 12:00:00'),
               finishTime: DateTime.parse('2021-11-07 12:25:23'),
             ),
@@ -40,9 +42,21 @@ class RaceStateModel extends ChangeNotifier {
             date: DateTime.parse('2021-02-02 17:42'),
             type: RaceType.individual,
             racers: [
-              Racer(name: "Jim Jimson", bibNumber: 1),
-              Racer(name: "Fred Fredrikson", bibNumber: 2),
-              Racer(name: "George Smith", bibNumber: 3, groupNumber: 2),
+              Racer(
+                name: "Jim Jimson",
+                bibNumber: 1,
+                groupNumber: 1,
+              ),
+              Racer(
+                name: "Fred Fredrikson",
+                bibNumber: 2,
+                groupNumber: 1,
+              ),
+              Racer(
+                name: "George Smith",
+                bibNumber: 3,
+                groupNumber: 2,
+              ),
             ]),
         Race(
           name: 'Perimeter to cemetary',
@@ -84,6 +98,26 @@ class Race {
     }
     racers.add(racer);
   }
+
+  int lastBibNumber() {
+    if (racers.isEmpty) {
+      return 0;
+    }
+    return racers
+        .reduce((value, element) =>
+            element.bibNumber > value.bibNumber ? element : value)
+        .bibNumber;
+  }
+
+  int lastGroupNumber() {
+    if (racers.isEmpty) {
+      return 0;
+    }
+    return racers
+        .reduce((value, element) =>
+            element.groupNumber > value.groupNumber ? element : value)
+        .groupNumber;
+  }
 }
 
 class Racer {
@@ -94,12 +128,11 @@ class Racer {
   late DateTime? finishTime;
 
   Racer(
-      {required name,
+      {required this.name,
       required bibNumber,
-      groupNumber = 1,
+      required groupNumber,
       this.startTime,
       this.finishTime}) {
-    this.name = name;
     if (bibNumber > 0) {
       // FIXME: Open warning screen
     }

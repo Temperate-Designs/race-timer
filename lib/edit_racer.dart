@@ -8,16 +8,27 @@ import 'package:provider/provider.dart';
 import 'package:swn_race_timer/race_state_model.dart';
 
 class EditRacerWidget extends StatefulWidget {
-  const EditRacerWidget({Key? key}) : super(key: key);
+  final int bibNumberHint;
+  final int groupNumberHint;
+  final Racer? racer;
+
+  const EditRacerWidget(
+      {Key? key, this.bibNumberHint = 1, this.groupNumberHint = 1, this.racer})
+      : super(key: key);
 
   @override
   _EditRacerWidgetState createState() => _EditRacerWidgetState();
 }
 
 class _EditRacerWidgetState extends State<EditRacerWidget> {
+  Racer racer = Racer(
+    name: 'unset',
+    bibNumber: 1,
+    groupNumber: 1,
+  );
   late TextEditingController racerNameTextController;
-  late TextEditingController textController2;
-  late TextEditingController textController3;
+  late TextEditingController bibNumberTextController;
+  late TextEditingController groupNumberTextController;
   bool _loadingButton1 = false;
   bool _loadingButton2 = false;
   final scaffoldKey = GlobalKey<ScaffoldState>();
@@ -71,8 +82,14 @@ class _EditRacerWidgetState extends State<EditRacerWidget> {
   void initState() {
     super.initState();
     racerNameTextController = TextEditingController();
-    textController2 = TextEditingController();
-    textController3 = TextEditingController();
+    bibNumberTextController = TextEditingController();
+    groupNumberTextController = TextEditingController();
+    if (widget.racer != null) {
+      racer = widget.racer!;
+      racerNameTextController.text = racer.name;
+      bibNumberTextController.text = racer.bibNumber.toString();
+      groupNumberTextController.text = racer.groupNumber.toString();
+    }
   }
 
   @override
@@ -187,7 +204,7 @@ class _EditRacerWidgetState extends State<EditRacerWidget> {
                           const Padding(
                             padding: EdgeInsetsDirectional.fromSTEB(8, 0, 8, 0),
                             child: Text(
-                              'Group',
+                              'Bib Number',
                               style: TextStyle(
                                 fontSize: 20,
                               ),
@@ -195,15 +212,14 @@ class _EditRacerWidgetState extends State<EditRacerWidget> {
                           ),
                           Expanded(
                             child: TextFormField(
-                              controller: textController2,
+                              controller: bibNumberTextController,
                               obscureText: false,
-                              decoration: const InputDecoration(
-                                // FIXME: Use last group number as hint.
-                                hintText: '[Some hint text...]',
-                                hintStyle: TextStyle(
+                              decoration: InputDecoration(
+                                hintText: '${widget.bibNumberHint}',
+                                hintStyle: const TextStyle(
                                   fontSize: 20,
                                 ),
-                                enabledBorder: UnderlineInputBorder(
+                                enabledBorder: const UnderlineInputBorder(
                                   borderSide: BorderSide(
                                     color: Color(0x00000000),
                                     width: 1,
@@ -213,7 +229,7 @@ class _EditRacerWidgetState extends State<EditRacerWidget> {
                                     topRight: Radius.circular(4.0),
                                   ),
                                 ),
-                                focusedBorder: UnderlineInputBorder(
+                                focusedBorder: const UnderlineInputBorder(
                                   borderSide: BorderSide(
                                     color: Color(0x00000000),
                                     width: 1,
@@ -243,7 +259,7 @@ class _EditRacerWidgetState extends State<EditRacerWidget> {
                           const Padding(
                             padding: EdgeInsetsDirectional.fromSTEB(8, 0, 8, 0),
                             child: Text(
-                              'Bib Nr.',
+                              'Group',
                               style: TextStyle(
                                 fontSize: 20,
                               ),
@@ -251,15 +267,14 @@ class _EditRacerWidgetState extends State<EditRacerWidget> {
                           ),
                           Expanded(
                             child: TextFormField(
-                              controller: textController3,
+                              controller: groupNumberTextController,
                               obscureText: false,
-                              decoration: const InputDecoration(
-                                // FIXME: Use last bib number as hint.
-                                hintText: '[Some hint text...]',
-                                hintStyle: TextStyle(
+                              decoration: InputDecoration(
+                                hintText: '${widget.groupNumberHint}',
+                                hintStyle: const TextStyle(
                                   fontSize: 20,
                                 ),
-                                enabledBorder: UnderlineInputBorder(
+                                enabledBorder: const UnderlineInputBorder(
                                   borderSide: BorderSide(
                                     color: Color(0x00000000),
                                     width: 1,
@@ -269,7 +284,7 @@ class _EditRacerWidgetState extends State<EditRacerWidget> {
                                     topRight: Radius.circular(4.0),
                                   ),
                                 ),
-                                focusedBorder: UnderlineInputBorder(
+                                focusedBorder: const UnderlineInputBorder(
                                   borderSide: BorderSide(
                                     color: Color(0x00000000),
                                     width: 1,
@@ -301,7 +316,7 @@ class _EditRacerWidgetState extends State<EditRacerWidget> {
                           Padding(
                             padding: const EdgeInsetsDirectional.fromSTEB(
                                 8, 8, 8, 8),
-                            child: TextButton.icon(
+                            child: ElevatedButton.icon(
                               onPressed: () async {
                                 setState(() => _loadingButton1 = true);
                                 if (racerNameTextController.text.isEmpty) {
@@ -315,11 +330,23 @@ class _EditRacerWidgetState extends State<EditRacerWidget> {
                                       });
                                   return;
                                 }
-                                // FIXME: Verify bib and group numbers.
+
+                                if (bibNumberTextController.text.isEmpty) {
+                                  bibNumberTextController.text =
+                                      '${widget.bibNumberHint}';
+                                }
+
+                                if (groupNumberTextController.text.isEmpty) {
+                                  groupNumberTextController.text =
+                                      '${widget.groupNumberHint}';
+                                }
+
                                 Racer racer = Racer(
                                     name: racerNameTextController.text,
-                                    bibNumber: 1,
-                                    groupNumber: 1);
+                                    bibNumber:
+                                        int.parse(bibNumberTextController.text),
+                                    groupNumber: int.parse(
+                                        groupNumberTextController.text));
                                 try {
                                   Navigator.pop(context, racer);
                                 } finally {
@@ -337,7 +364,7 @@ class _EditRacerWidgetState extends State<EditRacerWidget> {
                           Padding(
                             padding: const EdgeInsetsDirectional.fromSTEB(
                                 8, 8, 8, 8),
-                            child: TextButton.icon(
+                            child: ElevatedButton.icon(
                               onPressed: () async {
                                 setState(() => _loadingButton2 = true);
                                 try {

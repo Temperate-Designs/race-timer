@@ -97,7 +97,7 @@ class _NewRaceWidgetState extends State<NewRaceWidget> {
                 fontSize: 24,
               ),
             ),
-            actions: [],
+            actions: const [],
             centerTitle: true,
             elevation: 4,
           ),
@@ -107,10 +107,14 @@ class _NewRaceWidgetState extends State<NewRaceWidget> {
               final racer = await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const EditRacerWidget(),
+                  builder: (context) => EditRacerWidget(
+                      bibNumberHint: newRace.lastBibNumber() + 1,
+                      groupNumberHint: newRace.lastGroupNumber()),
                 ),
               );
-              newRace.addRacer(racer);
+              if (racer != null) {
+                newRace.addRacer(racer);
+              }
             },
             backgroundColor: Colors.blue,
             icon: const Icon(
@@ -399,14 +403,15 @@ class _NewRaceWidgetState extends State<NewRaceWidget> {
                             color: const Color(0x00F5F5F5),
                             child: InkWell(
                               onTap: () async {
-                                Racer racer = await Navigator.push(
+                                Racer? racer = await Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) =>
-                                        const EditRacerWidget(),
-                                  ),
+                                      builder: (context) => EditRacerWidget(
+                                          racer: newRace.racers[index])),
                                 );
-                                newRace.racers[index] = racer;
+                                if (racer != null) {
+                                  newRace.racers[index] = racer;
+                                }
                               },
                               child: ListTile(
                                 title: Text(newRace.racers[index].name),
