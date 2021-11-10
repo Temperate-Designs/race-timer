@@ -109,7 +109,9 @@ class _NewRaceWidgetState extends State<NewRaceWidget> {
                 MaterialPageRoute(
                   builder: (context) => EditRacerWidget(
                       bibNumberHint: newRace.lastBibNumber() + 1,
-                      groupNumberHint: newRace.lastGroupNumber()),
+                      groupNumberHint: newRace.lastGroupNumber() == 0
+                          ? 1
+                          : newRace.lastGroupNumber()),
                 ),
               );
               if (racer != null) {
