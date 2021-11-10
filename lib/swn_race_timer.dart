@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:ui';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -100,10 +101,10 @@ class _SWNRaceTimerState extends State<SWNRaceTimer> {
                     style: TextStyle(fontSize: 24),
                   ),
                   actions: [
-                    ElevatedButton(
-                      onPressed: () => throw Exception('Testcrash'),
+                    kDebugMode ? ElevatedButton(
+                      onPressed: () => FirebaseCrashlytics.instance.crash(),
                       child: const Text('Crash'),
-                    )
+                    ) : const Text(''),
                   ],
                   centerTitle: true,
                   elevation: 4,
