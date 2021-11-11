@@ -4,11 +4,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class RaceStateModel extends ChangeNotifier {
-  late List<Race> _races = [];
+  late List<Race> _pastRaces = [];
+  late List<Race> _openRaces = [];
 
   RaceStateModel() {
     if (kDebugMode) {
-      _races = [
+      _pastRaces = [
         Race(
           name: 'Kwage Trail Time Trial',
           date: DateTime.now(),
@@ -66,13 +67,12 @@ class RaceStateModel extends ChangeNotifier {
     }
   }
 
-  int get numberOfRaces => _races.length;
-  UnmodifiableListView<Race> get races => UnmodifiableListView(_races);
+  int get numberOfRaces => _pastRaces.length;
+  UnmodifiableListView<Race> get pastRaces => UnmodifiableListView(_pastRaces);
+  UnmodifiableListView<Race> get openRaces => UnmodifiableListView(_openRaces);
 
-  @override
-  bool operator ==(RaceStateModel) {
-    // FIXME: Implement real comparison
-    return true;
+  void addRace(Race newRace) {
+    _openRaces.add(newRace);
   }
 }
 
@@ -89,6 +89,8 @@ class Race {
       this.type = RaceType.mass}) {
     if (racers == null) {
       this.racers = [];
+    } else {
+      this.racers = racers;
     }
   }
 

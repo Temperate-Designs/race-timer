@@ -85,7 +85,7 @@ class _NewRaceWidgetState extends State<NewRaceWidget> {
       _createAnchoredBanner(context);
     }
     return Consumer<RaceStateModel>(
-      builder: (BuildContext context, value, Widget? child) {
+      builder: (context, model, child) {
         return Scaffold(
           key: scaffoldKey,
           appBar: AppBar(
@@ -355,12 +355,13 @@ class _NewRaceWidgetState extends State<NewRaceWidget> {
                                           });
                                     } else {
                                       newRace.name = textController.text;
+                                      model.addRace(newRace);
                                       try {
                                         await Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) =>
-                                                const RaceWidget(),
+                                                RaceWidget(newRace),
                                           ),
                                         );
                                       } finally {

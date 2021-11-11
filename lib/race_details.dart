@@ -124,20 +124,20 @@ class _RaceDetailsWidgetState extends State<RaceDetailsWidget> {
                           mainAxisSize: MainAxisSize.max,
                           children: [
                             Text(
-                              'Date: ${DateFormat('d LLL y').format(model.races[widget.raceIndex].date!)}',
+                              'Date: ${DateFormat('d LLL y').format(model.pastRaces[widget.raceIndex].date!)}',
                               textAlign: TextAlign.start,
                               style: const TextStyle(
                                 fontSize: 20,
                               ),
                             ),
                             Text(
-                              '${model.races[widget.raceIndex].racers.length} racers',
+                              '${model.pastRaces[widget.raceIndex].racers.length} racers',
                               style: const TextStyle(
                                 fontSize: 20,
                               ),
                             ),
                             Text(
-                              '${model.races[widget.raceIndex].type.toRaceTypeString()} starts',
+                              '${model.pastRaces[widget.raceIndex].type.toRaceTypeString()} starts',
                               style: const TextStyle(
                                 fontSize: 20,
                               ),
@@ -150,22 +150,22 @@ class _RaceDetailsWidgetState extends State<RaceDetailsWidget> {
                       child: ListView.builder(
                         padding: EdgeInsets.zero,
                         scrollDirection: Axis.vertical,
-                        itemCount: model.races[widget.raceIndex].racers.length,
+                        itemCount: model.pastRaces[widget.raceIndex].racers.length,
                         itemBuilder: (context, index) => Card(
                           clipBehavior: Clip.antiAliasWithSaveLayer,
                           color: const Color(0x00F5F5F5),
                           child: ListTile(
                             isThreeLine: false,
                             title: Text(
-                              model.races[widget.raceIndex].racers[index].name,
+                              model.pastRaces[widget.raceIndex].racers[index].name,
                               style: const TextStyle(
                                 fontSize: 24,
                               ),
                             ),
                             subtitle: Text(
-                              'Bib: ${model.races[widget.raceIndex].racers[index].bibNumber.toString().padLeft(3, '0')}\n'
-                              'Group ${model.races[widget.raceIndex].racers[index].groupNumber.toString().padLeft(2, '0')}\n'
-                              'Time: ${model.races[widget.raceIndex].racers[index].time()}',
+                              'Bib: ${model.pastRaces[widget.raceIndex].racers[index].bibNumber.toString().padLeft(3, '0')}\n'
+                              'Group ${model.pastRaces[widget.raceIndex].racers[index].groupNumber.toString().padLeft(2, '0')}\n'
+                              'Time: ${model.pastRaces[widget.raceIndex].racers[index].time()}',
                               style: const TextStyle(
                                 fontSize: 18,
                               ),

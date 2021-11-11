@@ -207,14 +207,14 @@ class _SWNRaceTimerState extends State<SWNRaceTimer> {
                                       ],
                                       child: ListTile(
                                         title: Text(
-                                          model.races[index].name,
+                                          model.pastRaces[index].name,
                                           style: const TextStyle(
                                             fontSize: 20,
                                           ),
                                         ),
                                         subtitle: Text(
-                                          '${DateFormat('d LLL y').format(model.races[index].date!)}\n'
-                                          '${model.races[index].racers.length} racers',
+                                          '${DateFormat('d LLL y').format(model.pastRaces[index].date!)}\n'
+                                          '${model.pastRaces[index].racers.length} racers',
                                           style: const TextStyle(
                                             fontSize: 20,
                                           ),
