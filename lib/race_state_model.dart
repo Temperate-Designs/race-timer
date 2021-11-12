@@ -128,6 +128,10 @@ class Racer {
   late int bibNumber;
   late DateTime? startTime;
   late DateTime? finishTime;
+  bool isRunning = false;
+  bool hasStarted = false;
+  int startMilliseconds = 0;
+  int finalMilliseconds = 0;
 
   Racer(
       {required this.name,

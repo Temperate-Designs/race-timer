@@ -17,7 +17,7 @@ class NewRaceWidget extends StatefulWidget {
 }
 
 class _NewRaceWidgetState extends State<NewRaceWidget> {
-  late TextEditingController textController;
+  late TextEditingController nameTextController;
   bool switchIndividual = true;
   bool switchGroup = false;
   bool switchMass = false;
@@ -68,14 +68,28 @@ class _NewRaceWidgetState extends State<NewRaceWidget> {
   @override
   void initState() {
     super.initState();
-    textController = TextEditingController();
+    nameTextController = TextEditingController();
+    if (kDebugMode) {
+      newRace.name = "Testrace";
+      nameTextController.text = newRace.name;
+      newRace.addRacer(Racer(
+        name: "Jim",
+        bibNumber: 1,
+        groupNumber: 1,
+      ));
+      newRace.addRacer(Racer(
+        name: "Bob",
+        bibNumber: 2,
+        groupNumber: 1,
+      ));
+    }
   }
 
   @override
   void dispose() {
     super.dispose();
     _ad?.dispose();
-    textController.dispose();
+    nameTextController.dispose();
   }
 
   @override
@@ -171,7 +185,7 @@ class _NewRaceWidgetState extends State<NewRaceWidget> {
                             ),
                             Expanded(
                               child: TextField(
-                                controller: textController,
+                                controller: nameTextController,
                                 obscureText: false,
                                 decoration: const InputDecoration(
                                   hintText: 'Please enter the race name',
@@ -344,7 +358,7 @@ class _NewRaceWidgetState extends State<NewRaceWidget> {
                                   ),
                                   onPressed: () async {
                                     setState(() => _saveRaceButton = true);
-                                    if (textController.text.isEmpty) {
+                                    if (nameTextController.text.isEmpty) {
                                       showDialog(
                                           context: context,
                                           builder: (context) {
@@ -354,7 +368,7 @@ class _NewRaceWidgetState extends State<NewRaceWidget> {
                                             );
                                           });
                                     } else {
-                                      newRace.name = textController.text;
+                                      newRace.name = nameTextController.text;
                                       model.addRace(newRace);
                                       try {
                                         await Navigator.push(

@@ -8,7 +8,8 @@ import 'package:provider/provider.dart';
 import 'package:swn_race_timer/race_state_model.dart';
 
 class RaceWidget extends StatefulWidget {
-  const RaceWidget(Race newRace, {Key? key}) : super(key: key);
+  final Race race;
+  const RaceWidget(this.race, {Key? key}) : super(key: key);
 
   @override
   _RaceWidgetState createState() => _RaceWidgetState();
@@ -16,6 +17,7 @@ class RaceWidget extends StatefulWidget {
 
 class _RaceWidgetState extends State<RaceWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  final Stopwatch _stopwatch = Stopwatch();
   static const AdRequest request = AdRequest();
   BannerAd? _ad;
   bool _isAdLoaded = false;
@@ -62,6 +64,31 @@ class _RaceWidgetState extends State<RaceWidget> {
     _ad?.dispose();
   }
 
+  String formatTime(int milliseconds) {
+    var secs = milliseconds ~/ 1000;
+    var hundredths = ((milliseconds % 1000) ~/ 10).toString().padLeft(2, '0');
+    var hours = (secs ~/ 3600).toString().padLeft(2, '0');
+    var minutes = ((secs % 3600) ~/ 60).toString().padLeft(2, '0');
+    var seconds = (secs % 60).toString().padLeft(2, '0');
+    return "$hours:$minutes:$seconds:$hundredths";
+  }
+
+  MaterialColor racerCardColor(int index) {
+    if (widget.race.racers[index].isRunning) {
+      if (widget.race.racers[index].groupNumber % 2 == 0) {
+        return Colors.lightGreen;
+      } else {
+        return Colors.green;
+      }
+    } else {
+      if (widget.race.racers[index].groupNumber % 2 == 0) {
+        return Colors.blueGrey;
+      } else {
+        return Colors.grey;
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!_isAdLoaded) {
@@ -106,6 +133,61 @@ class _RaceWidgetState extends State<RaceWidget> {
                           height: _ad!.size.height.toDouble(),
                           alignment: Alignment.center,
                         ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                              margin: const EdgeInsets.all(16),
+                              padding: const EdgeInsets.all(10),
+                              decoration:
+                                  const BoxDecoration(color: Colors.white),
+                              child: Text(
+                                  formatTime(_stopwatch.elapsedMilliseconds),
+                                  style: const TextStyle(
+                                      fontSize: 42,
+                                      fontWeight: FontWeight.bold))),
+                          Ink(
+                            decoration: const ShapeDecoration(
+                              color: Colors.green,
+                              shape: CircleBorder(),
+                            ),
+                            child: IconButton(
+                              icon: const Icon(Icons.play_arrow),
+                              tooltip: 'Start Race',
+                              color: Colors.white,
+                              onPressed: () => null,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: widget.race.racers.length,
+                          itemBuilder: (context, index) {
+                            return Card(
+                              child: ListTile(
+                                isThreeLine: false,
+                                title: Text(
+                                  model.pastRaces[index].racers[index].name,
+                                  style: const TextStyle(
+                                    fontSize: 24,
+                                  ),
+                                ),
+                                subtitle: Text(
+                                  'Bib: ${widget.race.racers[index].bibNumber.toString().padLeft(3, '0')}\n'
+                                  'Group ${widget.race.racers[index].groupNumber.toString().padLeft(2, '0')}\n'
+                                  'Time: ${widget.race.racers[index].time()}',
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                  ),
+                                ),
+                                tileColor: const Color(0xFFF5F5F5),
+                                dense: false,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
                     ],
                   ),
                 ),
