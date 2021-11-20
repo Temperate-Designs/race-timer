@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -72,6 +73,7 @@ class RaceStateModel extends ChangeNotifier {
   UnmodifiableListView<Race> get openRaces => UnmodifiableListView(_openRaces);
 
   void addRace(Race newRace) {
+    log('Adding race to open races');
     _openRaces.add(newRace);
   }
 }

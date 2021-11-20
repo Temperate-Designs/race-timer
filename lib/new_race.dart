@@ -369,6 +369,13 @@ class _NewRaceWidgetState extends State<NewRaceWidget> {
                                           });
                                     } else {
                                       newRace.name = nameTextController.text;
+                                      if (switchIndividual) {
+                                        newRace.type = RaceType.individual;
+                                      } else if (switchGroup) {
+                                        newRace.type = RaceType.group;
+                                      } else if (switchMass) {
+                                        newRace.type = RaceType.mass;
+                                      }
                                       model.addRace(newRace);
                                       try {
                                         await Navigator.push(
