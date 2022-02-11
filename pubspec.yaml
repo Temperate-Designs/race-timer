@@ -32,16 +32,16 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: ^0.17.0
-  google_mobile_ads: ^0.13.4
+  google_mobile_ads: ^1.1.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   package_info_plus: ^1.0.6
-  flutter_slidable: ^0.6.0
+  flutter_slidable: ^1.2.0
   provider: ^6.0.1
   firebase_core: ^1.10.0
-  firebase_analytics: ^8.3.4
+  firebase_analytics: ^9.1.0
   firebase_crashlytics: ^2.3.0
 
 dev_dependencies:
