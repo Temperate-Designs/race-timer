@@ -4,6 +4,16 @@ void main() {
   runApp(const RaceTimer());
 }
 
+class Race {
+  String title = '';
+  String description = '';
+  List<Racer> racers = [];
+}
+
+class Racer {
+  String name = '';
+}
+
 class RaceTimer extends StatelessWidget {
   const RaceTimer({Key? key}) : super(key: key);
 
