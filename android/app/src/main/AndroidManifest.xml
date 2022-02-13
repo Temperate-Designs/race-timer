@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.swn_race_timer">
+    package="com.temperatedesigns.swn_race_timer">
     <application
         android:label="Southwest Nordic Race Timer"
         android:name="${applicationName}"
