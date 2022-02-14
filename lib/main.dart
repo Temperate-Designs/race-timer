@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const RaceTimer());
-}
-
 class Race {
   String title = '';
   String description = '';
@@ -12,6 +8,10 @@ class Race {
 
 class Racer {
   String name = '';
+}
+
+void main() {
+  runApp(const RaceTimer());
 }
 
 class RaceTimer extends StatelessWidget {
