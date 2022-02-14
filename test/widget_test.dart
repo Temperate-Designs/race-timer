@@ -5,7 +5,6 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:swn_race_timer/main.dart';
@@ -13,7 +12,7 @@ import 'package:swn_race_timer/main.dart';
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const RaceTimer());
+    await tester.pumpWidget(const RaceTimerWidget());
 
     // Verify that our counter starts at 0.
     expect(find.text('Welcome'), findsOneWidget);
