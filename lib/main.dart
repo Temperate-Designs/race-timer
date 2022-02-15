@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class Race {
   String title = '';
@@ -46,11 +47,26 @@ class _RaceTimerState extends State<RaceTimerWidget> {
   bool _isLoaded = false;
   late Orientation _currentOrientation;
 
+  PackageInfo _packageInfo = PackageInfo(
+    appName: 'Unknown',
+    packageName: 'Unknown',
+    version: 'Unknown',
+    buildNumber: 'Unknown',
+    buildSignature: 'Unknown',
+  );
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _currentOrientation = MediaQuery.of(context).orientation;
     _loadAd();
+  }
+
+  Future<void> _initPackageInfo() async {
+    final info = await PackageInfo.fromPlatform();
+    setState(() {
+      _packageInfo = info;
+    });
   }
 
   Future<void> _loadAd() async {
@@ -132,6 +148,26 @@ class _RaceTimerState extends State<RaceTimerWidget> {
     return Scaffold(
         appBar: AppBar(
           title: const Text('Southwest Nordic Race Timer'),
+        ),
+        drawer: Drawer(
+          child: ListView(
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text(
+                  'App Info',
+                  style: TextStyle(fontSize: 20.0),
+                ),
+              ),
+              Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: FutureBuilder(
+                    future: _initPackageInfo(),
+                    builder: (context, snapshot) => Text(
+                        'Version: ${_packageInfo.version}+${_packageInfo.buildNumber}'),
+                  )),
+            ],
+          ),
         ),
         body: Column(
           children: [
