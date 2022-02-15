@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +16,16 @@ class Racer {
 }
 
 void main() {
-  runApp(const RaceTimerWidget());
+  WidgetsFlutterBinding.ensureInitialized();
+  MobileAds.instance.initialize();
+  runApp(MaterialApp(
+    title: "Southwest Nordic Race Timer",
+    theme: ThemeData(
+      primarySwatch: Colors.orange,
+      visualDensity: VisualDensity.adaptivePlatformDensity,
+    ),
+    home: const RaceTimerWidget(),
+  ));
 }
 
 class RaceTimerWidget extends StatefulWidget {
@@ -26,119 +36,115 @@ class RaceTimerWidget extends StatefulWidget {
 }
 
 class _RaceTimerState extends State<RaceTimerWidget> {
-  late BannerAd _ad;
-  bool _isAdLoaded = false;
+  BannerAd? _anchoredAdaptiveAd;
+  bool _isLoaded = false;
+  late Orientation _currentOrientation;
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _currentOrientation = MediaQuery.of(context).orientation;
+    _loadAd();
+  }
 
-    log('Loading ad');
+  Future<void> _loadAd() async {
+    log('Loading new Ad');
 
-    _ad = BannerAd(
-      adUnitId: kDebugMode
-          ? 'ca-app-pub-3940256099942544/6300978111'
-          : 'ca-app-pub-4328959315579213/8369004752',
-      size: AdSize.banner,
+    await _anchoredAdaptiveAd?.dispose();
+    setState(() {
+      _anchoredAdaptiveAd = null;
+      _isLoaded = false;
+    });
+
+    final AnchoredAdaptiveBannerAdSize? size =
+        await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+            MediaQuery.of(context).size.width.truncate());
+
+    if (size == null) {
+      log('Unable to get height of anchored banner.');
+      return;
+    }
+
+    _anchoredAdaptiveAd = BannerAd(
+      adUnitId: Platform.isAndroid
+          ? (kDebugMode
+              ? 'ca-app-pub-3940256099942544/6300978111'
+              : 'ca-app-pub-4328959315579213/8369004752')
+          : 'ca-app-pub-3940256099942544/2934735716',
+      size: size,
       request: const AdRequest(),
       listener: BannerAdListener(
-        onAdLoaded: (_) {
-          log('$BannerAd loaded');
+        onAdLoaded: (Ad ad) {
+          log('$ad loaded: ${ad.responseInfo}');
           setState(() {
-            _isAdLoaded = true;
+            // When the ad is loaded, get the ad size and use it to set
+            // the height of the ad container.
+            _anchoredAdaptiveAd = ad as BannerAd;
+            _isLoaded = true;
           });
         },
-        onAdFailedToLoad: (ad, error) {
-          // Releases an ad resource when it fails to load
+        onAdFailedToLoad: (Ad ad, LoadAdError error) {
+          log('Anchored adaptive banner failedToLoad: $error');
           ad.dispose();
-
-          log('Ad load failed (code=${error.code} message=${error.message})');
         },
-        onAdOpened: (Ad ad) => log('$BannerAd onAdOpened.'),
-        onAdClosed: (Ad ad) => log('$BannerAd onAdClosed.'),
       ),
     );
-
-    // COMPLETE: Load an ad
-    _ad.load();
+    return _anchoredAdaptiveAd!.load();
   }
 
-  @override
-  void dispose() {
-    _ad.dispose();
-    super.dispose();
-  }
-
-  Future<InitializationStatus> _initGoogleMobileAds() {
-    return MobileAds.instance.initialize();
+  /// Gets a widget containing the ad, if one is loaded.
+  ///
+  /// Returns an empty container if no ad is loaded, or the orientation
+  /// has changed. Also loads a new ad if the orientation changes.
+  Widget _getAdWidget() {
+    log('Getting Ad widget');
+    return OrientationBuilder(
+      builder: (context, orientation) {
+        log('Checking if orientation has changed');
+        if (_currentOrientation == orientation &&
+            _anchoredAdaptiveAd != null &&
+            _isLoaded) {
+          return Container(
+            color: Colors.green,
+            width: _anchoredAdaptiveAd!.size.width.toDouble(),
+            height: _anchoredAdaptiveAd!.size.height.toDouble(),
+            child: AdWidget(ad: _anchoredAdaptiveAd!),
+          );
+        }
+        // Reload the ad if the orientation changes.
+        if (_currentOrientation != orientation) {
+          _currentOrientation = orientation;
+          _loadAd();
+        }
+        return Container();
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Southwest Nordic Race Timer',
-      theme: ThemeData(
-        primarySwatch: Colors.orange,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: Scaffold(
+    return Scaffold(
         appBar: AppBar(
           title: const Text('Southwest Nordic Race Timer'),
         ),
-        body: FutureBuilder<InitializationStatus>(
-          future: _initGoogleMobileAds(),
-          builder: (context, snapshot) {
-            List<Widget> children = [];
-
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              children.add(const Center(
-                child: SizedBox(
-                  child: CircularProgressIndicator(),
-                  width: 48.0,
-                  height: 48.0,
-                ),
-              ));
-            } else {
-              if (snapshot.hasData) {
-                if (_isAdLoaded) {
-                  children.add(Container(
-                    child: AdWidget(ad: _ad),
-                    width: _ad.size.width.toDouble(),
-                    height: _ad.size.height.toDouble(),
-                    alignment: Alignment.center,
-                  ));
-                }
-                children.add(const Text('Past Races'));
-              } else if (snapshot.hasError) {
-                children.add(Center(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: const [
-                      Icon(
-                        Icons.error_outline,
-                        color: Colors.red,
-                        size: 24,
-                      ),
-                      SizedBox(width: 8.0),
-                      Text('Failed to initialize AdMob SDK'),
-                    ],
-                  ),
-                ));
-              }
-            }
-
-            return Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: children,
+        body: Column(
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text(
+                'Past Races',
+                style: TextStyle(fontSize: 20.0),
               ),
-            );
-          },
-        ),
-      ),
-    );
+            ),
+            const Spacer(),
+            _getAdWidget(),
+          ],
+        ));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _anchoredAdaptiveAd?.dispose();
   }
 }

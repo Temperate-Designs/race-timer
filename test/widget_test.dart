@@ -10,12 +10,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:swn_race_timer/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('Race Timer smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const RaceTimerWidget());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('Welcome'), findsOneWidget);
+    expect(find.text('Southwest Nordic Race Timer'), findsOneWidget);
 
     // Tap the '+' icon and trigger a frame.
     // await tester.tap(find.byIcon(Icons.add));
