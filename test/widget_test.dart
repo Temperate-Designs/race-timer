@@ -12,11 +12,12 @@ import 'package:swn_race_timer/main.dart';
 void main() {
   testWidgets('Race Timer smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const RaceTimerWidget());
+    await tester.pumpWidget(RaceTimerApp());
 
     expect(find.text('Southwest Nordic Race Timer'), findsOneWidget);
+    expect(find.text('Past Races'), findsOneWidget);
 
-    // Tap the '+' icon and trigger a frame.
+    // Tap the '+' icon and trig`ger a frame.
     // await tester.tap(find.byIcon(Icons.add));
     // await tester.pump();
 

@@ -18,14 +18,20 @@ class Racer {
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();
-  runApp(MaterialApp(
-    title: "Southwest Nordic Race Timer",
-    theme: ThemeData(
-      primarySwatch: Colors.orange,
-      visualDensity: VisualDensity.adaptivePlatformDensity,
-    ),
-    home: const RaceTimerWidget(),
-  ));
+  runApp(RaceTimerApp());
+}
+
+class RaceTimerApp extends MaterialApp {
+  RaceTimerApp({Key? key})
+      : super(
+          key: key,
+          title: "Southwest Nordic Race Timer",
+          theme: ThemeData(
+            primarySwatch: Colors.orange,
+            visualDensity: VisualDensity.adaptivePlatformDensity,
+          ),
+          home: const RaceTimerWidget(),
+        );
 }
 
 class RaceTimerWidget extends StatefulWidget {
