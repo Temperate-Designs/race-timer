@@ -62,11 +62,10 @@ class _RaceTimerState extends State<RaceTimerWidget> {
     _loadAd();
   }
 
-  Future<void> _initPackageInfo() async {
+  Future<String> _getPackageInfo() async {
     final info = await PackageInfo.fromPlatform();
-    setState(() {
-      _packageInfo = info;
-    });
+    String version = '${info.version}+${info.buildNumber}';
+    return version;
   }
 
   Future<void> _loadAd() async {
@@ -162,9 +161,10 @@ class _RaceTimerState extends State<RaceTimerWidget> {
               Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: FutureBuilder(
-                    future: _initPackageInfo(),
-                    builder: (context, snapshot) => Text(
-                        'Version: ${_packageInfo.version}+${_packageInfo.buildNumber}'),
+                    future: _getPackageInfo(),
+                    builder: (context, snapshot) => Text(snapshot.hasData
+                        ? 'Version: ${snapshot.data}'
+                        : 'Loading...'),
                   )),
             ],
           ),
