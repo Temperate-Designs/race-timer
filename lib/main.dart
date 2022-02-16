@@ -172,6 +172,26 @@ class _RaceTimerState extends State<RaceTimerWidget> {
     );
   }
 
+  Widget titleWidget = const Padding(
+    padding: EdgeInsets.all(8.0),
+    child: Text(
+      'Past Races',
+      style: TextStyle(fontSize: 20.0),
+    ),
+  );
+
+  Widget pastRacesWidget = Expanded(
+    child: ListView.builder(
+        itemCount: 1,
+        itemBuilder: (context, index) {
+          return Container(
+            padding: const EdgeInsets.all(8.0),
+            decoration: const BoxDecoration(color: Colors.blue),
+            child: const Text('Hello'),
+          );
+        }),
+  );
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -200,14 +220,10 @@ class _RaceTimerState extends State<RaceTimerWidget> {
           ),
         ),
         body: Column(
+          mainAxisSize: MainAxisSize.max,
           children: [
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Text(
-                'Past Races',
-                style: TextStyle(fontSize: 20.0),
-              ),
-            ),
+            titleWidget,
+            pastRacesWidget,
             const Spacer(),
             _getAdWidget(),
           ],
