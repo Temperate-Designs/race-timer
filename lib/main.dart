@@ -135,7 +135,7 @@ class _RaceTimerState extends State<RaceTimerWidget> {
           });
         },
         onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          log('Anchored adaptive banner failedToLoad: $error');
+          log('Ad failedToLoad: $error');
           ad.dispose();
         },
       ),
