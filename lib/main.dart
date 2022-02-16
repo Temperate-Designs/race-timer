@@ -230,7 +230,7 @@ class _RaceTimerState extends State<RaceTimerWidget> {
             titleWidget,
             pastRacesWidget,
             const Spacer(),
-            _getAdWidget(),
+            // _getAdWidget(),
           ],
         ));
   }
