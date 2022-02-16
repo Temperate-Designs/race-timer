@@ -6,7 +6,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:provider/provider.dart';
 
 class Race {
   String title;
@@ -30,24 +29,20 @@ class Racer {
   });
 }
 
-class RaceModel extends ChangeNotifier {
+class RaceData {
   final List<Race> _races = [];
 
   UnmodifiableListView<Race> get races => UnmodifiableListView(_races);
 
   void add(Race newRace) {
     _races.add(newRace);
-    notifyListeners();
   }
 }
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();
-  runApp(ChangeNotifierProvider(
-    create: (context) => RaceModel(),
-    child: RaceTimerApp(),
-  ));
+  runApp(RaceTimerApp());
 }
 
 class RaceTimerApp extends MaterialApp {
