@@ -182,12 +182,17 @@ class _RaceTimerState extends State<RaceTimerWidget> {
 
   Widget pastRacesWidget = Expanded(
     child: ListView.builder(
-        itemCount: 1,
+        itemCount: 3,
         itemBuilder: (context, index) {
-          return Container(
-            padding: const EdgeInsets.all(8.0),
-            decoration: const BoxDecoration(color: Colors.blue),
-            child: const Text('Hello'),
+          return Column(
+            children: [
+              const SizedBox(height: 8.0),
+              Container(
+                padding: const EdgeInsets.all(8.0),
+                decoration: const BoxDecoration(color: Colors.blue),
+                child: const Text('Hello'),
+              ),
+            ],
           );
         }),
   );
