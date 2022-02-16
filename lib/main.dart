@@ -32,6 +32,21 @@ class Racer {
 class RaceData {
   final List<Race> _races = [];
 
+  RaceData() {
+    if (kDebugMode) {
+      add(Race(
+        title: 'Race 1',
+        description: 'First race',
+        racers: [
+          Racer(
+            name: 'Anthony Adams',
+            bibNumber: 1,
+          )
+        ],
+      ));
+    }
+  }
+
   UnmodifiableListView<Race> get races => UnmodifiableListView(_races);
 
   void add(Race newRace) {
