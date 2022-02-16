@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:developer';
 import 'dart:io';
 
@@ -5,21 +6,48 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:provider/provider.dart';
 
 class Race {
-  String title = '';
-  String description = '';
-  List<Racer> racers = [];
+  String title;
+  String description;
+  List<Racer> racers;
+
+  Race({
+    this.title = '',
+    this.description = '',
+    this.racers = const [],
+  });
 }
 
 class Racer {
-  String name = '';
+  String name;
+  int bibNumber;
+
+  Racer({
+    this.name = '',
+    this.bibNumber = 1,
+  });
+}
+
+class RaceModel extends ChangeNotifier {
+  final List<Race> _races = [];
+
+  UnmodifiableListView<Race> get races => UnmodifiableListView(_races);
+
+  void add(Race newRace) {
+    _races.add(newRace);
+    notifyListeners();
+  }
 }
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();
-  runApp(RaceTimerApp());
+  runApp(ChangeNotifierProvider(
+    create: (context) => RaceModel(),
+    child: RaceTimerApp(),
+  ));
 }
 
 class RaceTimerApp extends MaterialApp {
@@ -46,14 +74,6 @@ class _RaceTimerState extends State<RaceTimerWidget> {
   BannerAd? _anchoredAdaptiveAd;
   bool _isLoaded = false;
   late Orientation _currentOrientation;
-
-  PackageInfo _packageInfo = PackageInfo(
-    appName: 'Unknown',
-    packageName: 'Unknown',
-    version: 'Unknown',
-    buildNumber: 'Unknown',
-    buildSignature: 'Unknown',
-  );
 
   @override
   void didChangeDependencies() {
