@@ -155,6 +155,7 @@ class _RaceTimerState extends State<RaceTimerWidget> {
         if (_currentOrientation == orientation &&
             _anchoredAdaptiveAd != null &&
             _isLoaded) {
+          log('Same orientation');
           return Container(
             color: Colors.green,
             width: _anchoredAdaptiveAd!.size.width.toDouble(),
@@ -164,6 +165,7 @@ class _RaceTimerState extends State<RaceTimerWidget> {
         }
         // Reload the ad if the orientation changes.
         if (_currentOrientation != orientation) {
+          log('Orientation has changed, reloading ad...');
           _currentOrientation = orientation;
           _loadAd();
         }
