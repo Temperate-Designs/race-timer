@@ -5,18 +5,21 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:intl/intl.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class Race {
   String title;
   String description;
+  DateTime date;
   List<Racer> racers;
 
   Race({
     this.title = '',
     this.description = '',
+    DateTime? date,
     this.racers = const [],
-  });
+  }) : date = date ?? DateTime.now();
 }
 
 class Racer {
@@ -31,18 +34,30 @@ class Racer {
 
 class RaceData {
   final List<Race> _races = [];
+  DateFormat dateformat = DateFormat.yMd();
 
   RaceData() {
     if (kDebugMode) {
       add(Race(
-        title: 'Race 1',
-        description: 'First race',
+        title: 'JNQ Minturn',
+        description: 'Individual starts, classic',
+        date: DateTime(2022, 02, 19),
         racers: [
           Racer(
             name: 'Anthony Adams',
             bibNumber: 1,
           )
         ],
+      ));
+      add(Race(
+        title: 'JNQ Minturn',
+        description: 'Mass starts, skate',
+        date: DateTime(2022, 02, 20),
+      ));
+      add(Race(
+        title: 'Funrace Durango',
+        description: 'Mass starts, classic',
+        date: DateTime(2022, 02, 28),
       ));
     }
   }
@@ -84,6 +99,8 @@ class _RaceTimerState extends State<RaceTimerWidget> {
   BannerAd? _anchoredAdaptiveAd;
   bool _isLoaded = false;
   late Orientation _currentOrientation;
+
+  RaceData raceData = RaceData();
 
   @override
   void didChangeDependencies() {
@@ -183,22 +200,47 @@ class _RaceTimerState extends State<RaceTimerWidget> {
     ),
   );
 
-  Widget pastRacesWidget = Expanded(
-    child: ListView.builder(
-        itemCount: 3,
-        itemBuilder: (context, index) {
-          return Column(
-            children: [
-              const SizedBox(height: 8.0),
-              Container(
-                padding: const EdgeInsets.all(8.0),
-                decoration: const BoxDecoration(color: Colors.blue),
-                child: const Text('Hello'),
-              ),
-            ],
-          );
-        }),
-  );
+  Widget pastRacesWidget(RaceData raceData) => Expanded(
+        child: ListView.builder(
+            itemCount: raceData._races.length,
+            itemBuilder: (context, index) {
+              return Column(
+                children: [
+                  const SizedBox(height: 8.0),
+                  Container(
+                    padding: const EdgeInsets.all(8.0),
+                    decoration: const BoxDecoration(color: Colors.orange),
+                    child: Row(
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(raceData._races[index].title),
+                            Text(raceData.dateformat
+                                .format(raceData._races[index].date)),
+                          ],
+                        ),
+                        const SizedBox(
+                          width: 8.0,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(raceData._races[index].description),
+                            Text(
+                                '${raceData._races[index].racers.length} racer' +
+                                    (raceData._races[index].racers.length > 1
+                                        ? 's'
+                                        : '')),
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            }),
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -231,7 +273,7 @@ class _RaceTimerState extends State<RaceTimerWidget> {
           mainAxisSize: MainAxisSize.max,
           children: [
             titleWidget,
-            pastRacesWidget,
+            pastRacesWidget(raceData),
             const Spacer(),
             _getAdWidget(),
           ],
