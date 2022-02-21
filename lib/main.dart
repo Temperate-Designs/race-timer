@@ -112,7 +112,7 @@ class _RaceTimerState extends State<RaceTimerWidget> {
             MediaQuery.of(context).size.width.truncate());
 
     if (size == null) {
-      log('Unable to get height of anchored banner.');
+      log('Unable to get height of anchored banner');
       return;
     }
 
@@ -134,6 +134,7 @@ class _RaceTimerState extends State<RaceTimerWidget> {
             _isLoaded = true;
           });
         },
+        onAdClicked: (ad) => log('$ad clicked'),
         onAdFailedToLoad: (Ad ad, LoadAdError error) {
           log('Ad failedToLoad: $error');
           ad.dispose();
@@ -232,7 +233,7 @@ class _RaceTimerState extends State<RaceTimerWidget> {
             titleWidget,
             pastRacesWidget,
             const Spacer(),
-            // _getAdWidget(),
+            _getAdWidget(),
           ],
         ));
   }
