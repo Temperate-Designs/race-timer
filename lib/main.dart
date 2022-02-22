@@ -94,6 +94,14 @@ class RaceTimerApp extends MaterialApp {
             primarySwatch: Colors.orange,
             visualDensity: VisualDensity.adaptivePlatformDensity,
           ),
+          onGenerateRoute: (RouteSettings settings) {
+            if (settings.name == ShowRaceWidget.routeName) {
+              final race = settings.arguments as Race;
+              return MaterialPageRoute(
+                  builder: (context) => ShowRaceWidget(race: race));
+            }
+            return null;
+          },
           home: const RaceTimerWidget(),
         );
 }
@@ -214,40 +222,44 @@ class _RaceTimerState extends State<RaceTimerWidget> {
         child: ListView.builder(
             itemCount: raceData.races.length,
             itemBuilder: (context, index) {
-              return Column(
-                children: [
-                  const SizedBox(height: 8.0),
-                  Container(
-                    padding: const EdgeInsets.all(8.0),
-                    decoration: const BoxDecoration(color: Colors.orange),
-                    child: Row(
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(raceData.races[index].title),
-                            Text(raceData.dateformat
-                                .format(raceData.races[index].date)),
-                          ],
-                        ),
-                        const SizedBox(
-                          width: 8.0,
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(raceData.races[index].description),
-                            Text(
-                                '${raceData.races[index].racers.length} racer' +
-                                    (raceData.races[index].racers.length > 1
-                                        ? 's'
-                                        : '')),
-                          ],
-                        )
-                      ],
+              return InkWell(
+                onTap: () => Navigator.pushNamed(context, '/show-race',
+                    arguments: raceData.races[index]),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 8.0),
+                    Container(
+                      padding: const EdgeInsets.all(8.0),
+                      decoration: const BoxDecoration(color: Colors.orange),
+                      child: Row(
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(raceData.races[index].title),
+                              Text(raceData.dateformat
+                                  .format(raceData.races[index].date)),
+                            ],
+                          ),
+                          const SizedBox(
+                            width: 8.0,
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(raceData.races[index].description),
+                              Text(
+                                  '${raceData.races[index].racers.length} racer' +
+                                      (raceData.races[index].racers.length > 1
+                                          ? 's'
+                                          : '')),
+                            ],
+                          )
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               );
             }),
       );
@@ -294,5 +306,26 @@ class _RaceTimerState extends State<RaceTimerWidget> {
   void dispose() {
     super.dispose();
     _anchoredAdaptiveAd?.dispose();
+  }
+}
+
+class ShowRaceWidget extends StatelessWidget {
+  static const routeName = '/show-race';
+  final Race race;
+
+  const ShowRaceWidget({Key? key, required this.race}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Southwest Nordic Race Timer'),
+      ),
+      body: Column(
+        children: [
+          Text(race.title),
+        ],
+      ),
+    );
   }
 }
