@@ -46,19 +46,29 @@ class RaceData {
           Racer(
             name: 'Anthony Adams',
             bibNumber: 1,
-          )
+          ),
         ],
       ));
       add(Race(
-        title: 'JNQ Minturn',
-        description: 'Mass starts, skate',
-        date: DateTime(2022, 02, 20),
-      ));
+          title: 'JNQ Minturn',
+          description: 'Mass starts, skate',
+          date: DateTime(2022, 02, 20),
+          racers: [
+            Racer(
+              name: 'Anthony Adams',
+              bibNumber: 1,
+            ),
+          ]));
       add(Race(
-        title: 'Funrace Durango',
-        description: 'Mass starts, classic',
-        date: DateTime(2022, 02, 28),
-      ));
+          title: 'Funrace Durango',
+          description: 'Mass starts, classic',
+          date: DateTime(2022, 02, 28),
+          racers: [
+            Racer(
+              name: 'Anthony Adams',
+              bibNumber: 1,
+            ),
+          ]));
     }
   }
 
@@ -202,7 +212,7 @@ class _RaceTimerState extends State<RaceTimerWidget> {
 
   Widget pastRacesWidget(RaceData raceData) => Expanded(
         child: ListView.builder(
-            itemCount: raceData._races.length,
+            itemCount: raceData.races.length,
             itemBuilder: (context, index) {
               return Column(
                 children: [
@@ -215,9 +225,9 @@ class _RaceTimerState extends State<RaceTimerWidget> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(raceData._races[index].title),
+                            Text(raceData.races[index].title),
                             Text(raceData.dateformat
-                                .format(raceData._races[index].date)),
+                                .format(raceData.races[index].date)),
                           ],
                         ),
                         const SizedBox(
@@ -226,10 +236,10 @@ class _RaceTimerState extends State<RaceTimerWidget> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(raceData._races[index].description),
+                            Text(raceData.races[index].description),
                             Text(
-                                '${raceData._races[index].racers.length} racer' +
-                                    (raceData._races[index].racers.length > 1
+                                '${raceData.races[index].racers.length} racer' +
+                                    (raceData.races[index].racers.length > 1
                                         ? 's'
                                         : '')),
                           ],
