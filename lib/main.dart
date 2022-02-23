@@ -309,11 +309,115 @@ class _RaceTimerState extends State<RaceTimerWidget> {
   }
 }
 
-class ShowRaceWidget extends StatelessWidget {
+class ShowRaceWidget extends StatefulWidget {
   static const routeName = '/show-race';
   final Race race;
-
   const ShowRaceWidget({Key? key, required this.race}) : super(key: key);
+
+  @override
+  // ignore: no_logic_in_create_state
+  _ShowRaceWidgetState createState() => _ShowRaceWidgetState(race: race);
+}
+
+class _ShowRaceWidgetState extends State<ShowRaceWidget> {
+  final Race race;
+  BannerAd? _anchoredAdaptiveAd;
+  bool _isLoaded = false;
+  late Orientation _currentOrientation;
+
+  _ShowRaceWidgetState({required this.race});
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _currentOrientation = MediaQuery.of(context).orientation;
+    _loadAd();
+  }
+
+  Future<void> _loadAd() async {
+    log('Loading new Ad');
+
+    await _anchoredAdaptiveAd?.dispose();
+    setState(() {
+      _anchoredAdaptiveAd = null;
+      _isLoaded = false;
+    });
+
+    final AnchoredAdaptiveBannerAdSize? size =
+        await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+            MediaQuery.of(context).size.width.truncate());
+
+    if (size == null) {
+      log('Unable to get height of anchored banner');
+      return;
+    }
+
+    _anchoredAdaptiveAd = BannerAd(
+      adUnitId: Platform.isAndroid
+          ? (kDebugMode
+              ? 'ca-app-pub-3940256099942544/6300978111'
+              : 'ca-app-pub-4328959315579213/8369004752')
+          : 'ca-app-pub-3940256099942544/2934735716',
+      size: size,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (Ad ad) {
+          log('$ad loaded: ${ad.responseInfo}');
+          setState(() {
+            // When the ad is loaded, get the ad size and use it to set
+            // the height of the ad container.
+            _anchoredAdaptiveAd = ad as BannerAd;
+            _isLoaded = true;
+          });
+        },
+        onAdClicked: (ad) => log('$ad clicked'),
+        onAdFailedToLoad: (Ad ad, LoadAdError error) {
+          log('Ad failedToLoad: $error');
+          ad.dispose();
+        },
+      ),
+    );
+    return _anchoredAdaptiveAd!.load();
+  }
+
+  /// Gets a widget containing the ad, if one is loaded.
+  ///
+  /// Returns an empty container if no ad is loaded, or the orientation
+  /// has changed. Also loads a new ad if the orientation changes.
+  Widget _getAdWidget() {
+    log('Getting Ad widget');
+    return OrientationBuilder(
+      builder: (context, orientation) {
+        log('Checking if orientation has changed');
+        if (_currentOrientation == orientation &&
+            _anchoredAdaptiveAd != null &&
+            _isLoaded) {
+          log('Same orientation');
+          return Container(
+            color: Colors.orange,
+            width: _anchoredAdaptiveAd!.size.width.toDouble(),
+            height: _anchoredAdaptiveAd!.size.height.toDouble(),
+            child: AdWidget(ad: _anchoredAdaptiveAd!),
+          );
+        }
+        // Reload the ad if the orientation changes.
+        if (_currentOrientation != orientation) {
+          log('Orientation has changed, reloading ad...');
+          _currentOrientation = orientation;
+          _loadAd();
+        }
+        return Container();
+      },
+    );
+  }
+
+  static const Widget titleWidget = Padding(
+    padding: EdgeInsets.all(8.0),
+    child: Text(
+      'Race Details',
+      style: TextStyle(fontSize: 20.0),
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -323,7 +427,9 @@ class ShowRaceWidget extends StatelessWidget {
       ),
       body: Column(
         children: [
-          Text(race.title),
+          titleWidget,
+          const Spacer(),
+          _getAdWidget(),
         ],
       ),
     );
