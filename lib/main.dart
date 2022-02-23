@@ -419,6 +419,39 @@ class _ShowRaceWidgetState extends State<ShowRaceWidget> {
     ),
   );
 
+  Widget raceDetailsWidget(Race race) => Expanded(
+        child: ListView.builder(
+            itemCount: race.racers.length,
+            itemBuilder: (context, index) {
+              return InkWell(
+                onTap: () => Navigator.pushNamed(context, '/show-racer',
+                    arguments: race.racers[index]),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 8.0),
+                    Container(
+                      padding: const EdgeInsets.all(8.0),
+                      decoration: const BoxDecoration(color: Colors.orange),
+                      child: Row(
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(race.racers[index].name),
+                            ],
+                          ),
+                          const SizedBox(
+                            width: 8.0,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+      );
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -428,6 +461,7 @@ class _ShowRaceWidgetState extends State<ShowRaceWidget> {
       body: Column(
         children: [
           titleWidget,
+          raceDetailsWidget(race),
           const Spacer(),
           _getAdWidget(),
         ],
