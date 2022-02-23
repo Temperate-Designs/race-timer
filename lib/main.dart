@@ -110,10 +110,10 @@ class RaceTimerWidget extends StatefulWidget {
   const RaceTimerWidget({Key? key}) : super(key: key);
 
   @override
-  _RaceTimerState createState() => _RaceTimerState();
+  _RaceTimerWidgetState createState() => _RaceTimerWidgetState();
 }
 
-class _RaceTimerState extends State<RaceTimerWidget> {
+class _RaceTimerWidgetState extends State<RaceTimerWidget> {
   BannerAd? _anchoredAdaptiveAd;
   bool _isLoaded = false;
   late Orientation _currentOrientation;
