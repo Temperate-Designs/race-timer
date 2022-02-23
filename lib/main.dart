@@ -193,7 +193,7 @@ class _RaceTimerState extends State<RaceTimerWidget> {
             _isLoaded) {
           log('Same orientation');
           return Container(
-            color: Colors.green,
+            color: Colors.orange,
             width: _anchoredAdaptiveAd!.size.width.toDouble(),
             height: _anchoredAdaptiveAd!.size.height.toDouble(),
             child: AdWidget(ad: _anchoredAdaptiveAd!),
