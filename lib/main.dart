@@ -25,11 +25,17 @@ class Race {
 class Racer {
   String name;
   int bibNumber;
+  DateTime startTime;
+  DateTime finishTime;
 
   Racer({
     this.name = '',
     this.bibNumber = 1,
-  });
+    DateTime? startTime,
+    DateTime? finishTime,
+  })  : startTime = startTime ?? DateTime.now(),
+        finishTime =
+            finishTime ?? DateTime.now().add(const Duration(minutes: 5));
 }
 
 class RaceData {
@@ -420,20 +426,18 @@ class _ShowRaceWidgetState extends State<ShowRaceWidget> {
   }
 
   Widget titleWidget(String name) => Padding(
-    padding: const EdgeInsets.all(8.0),
-    child: Text(
-      'Race Details - $name',
-      style: const TextStyle(fontSize: 20.0),
-    ),
-  );
+        padding: const EdgeInsets.all(8.0),
+        child: Text(
+          'Race Details - $name',
+          style: const TextStyle(fontSize: 20.0),
+        ),
+      );
 
   Widget raceDetailsWidget(Race race) => Expanded(
         child: ListView.builder(
             itemCount: race.racers.length,
             itemBuilder: (context, index) {
               return InkWell(
-                onTap: () => Navigator.pushNamed(context, '/show-racer',
-                    arguments: race.racers[index]),
                 child: Column(
                   children: [
                     const SizedBox(height: 8.0),
@@ -445,8 +449,11 @@ class _ShowRaceWidgetState extends State<ShowRaceWidget> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(race.racers[index].name),
-                              Text(race.racers[index].bibNumber.toString()),
+                              Text(
+                                  "(${race.racers[index].bibNumber}) ${race.racers[index].name}"),
+                              Text(race.racers[index].finishTime
+                                  .difference(race.racers[index].startTime)
+                                  .toString()),
                             ],
                           ),
                           const SizedBox(
