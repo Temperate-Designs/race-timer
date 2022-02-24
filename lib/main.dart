@@ -47,6 +47,14 @@ class RaceData {
             name: 'Anthony Adams',
             bibNumber: 1,
           ),
+          Racer(
+            name: 'Ben Beyer',
+            bibNumber: 2,
+          ),
+          Racer(
+            name: 'Charlie Chum',
+            bibNumber: 3,
+          ),
         ],
       ));
       add(Race(
@@ -411,11 +419,11 @@ class _ShowRaceWidgetState extends State<ShowRaceWidget> {
     );
   }
 
-  static const Widget titleWidget = Padding(
-    padding: EdgeInsets.all(8.0),
+  Widget titleWidget(String name) => Padding(
+    padding: const EdgeInsets.all(8.0),
     child: Text(
-      'Race Details',
-      style: TextStyle(fontSize: 20.0),
+      'Race Details - $name',
+      style: const TextStyle(fontSize: 20.0),
     ),
   );
 
@@ -438,6 +446,7 @@ class _ShowRaceWidgetState extends State<ShowRaceWidget> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(race.racers[index].name),
+                              Text(race.racers[index].bibNumber.toString()),
                             ],
                           ),
                           const SizedBox(
@@ -460,7 +469,7 @@ class _ShowRaceWidgetState extends State<ShowRaceWidget> {
       ),
       body: Column(
         children: [
-          titleWidget,
+          titleWidget(race.title),
           raceDetailsWidget(race),
           const Spacer(),
           _getAdWidget(),
