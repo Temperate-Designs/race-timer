@@ -211,12 +211,23 @@ class RaceTimerApp extends MaterialApp {
             visualDensity: VisualDensity.adaptivePlatformDensity,
           ),
           onGenerateRoute: (RouteSettings settings) {
-            if (settings.name == ShowRaceWidget.routeName) {
-              final race = settings.arguments as Race;
-              return MaterialPageRoute(
-                  builder: (context) => ShowRaceWidget(race: race));
+            switch (settings.name) {
+              case ShowRaceWidget.routeName:
+                {
+                  final race = settings.arguments as Race;
+                  return MaterialPageRoute(
+                      builder: (context) => ShowRaceWidget(race: race));
+                }
+              case NewRaceWidget.routeName:
+                {
+                  return MaterialPageRoute(
+                      builder: (context) => const NewRaceWidget());
+                }
+              default:
+                {
+                  return null;
+                }
             }
-            return null;
           },
           home: const RaceTimerWidget(),
         );
@@ -251,7 +262,8 @@ class _RaceTimerWidgetState extends AdMobState<RaceTimerWidget> {
             itemCount: raceData.races.length,
             itemBuilder: (context, index) {
               return InkWell(
-                onTap: () => Navigator.pushNamed(context, '/show-race',
+                onTap: () => Navigator.pushNamed(
+                    context, ShowRaceWidget.routeName,
                     arguments: raceData.races[index]),
                 child: Column(
                   children: [
@@ -298,6 +310,14 @@ class _RaceTimerWidgetState extends AdMobState<RaceTimerWidget> {
         appBar: AppBar(
           title: appTitleWidget,
         ),
+        persistentFooterButtons: [
+          TextButton.icon(
+            onPressed: () =>
+                Navigator.pushNamed(context, NewRaceWidget.routeName),
+            icon: const Icon(Icons.add),
+            label: const Text('New Race'),
+          ),
+        ],
         drawer: Drawer(
           child: ListView(
             children: [
@@ -400,6 +420,28 @@ class _ShowRaceWidgetState extends AdMobState<ShowRaceWidget> {
           titleWidget(race.title),
           raceDetailsWidget(race),
         ],
+      ),
+    );
+  }
+}
+
+class NewRaceWidget extends StatefulWidget {
+  static const routeName = '/new-race';
+  const NewRaceWidget({Key? key}) : super(key: key);
+
+  @override
+  _NewRaceState createState() => _NewRaceState();
+}
+
+class _NewRaceState extends AdMobState<NewRaceWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: appTitleWidget,
+      ),
+      body: Column(
+        children: [_getAdWidget()],
       ),
     );
   }
