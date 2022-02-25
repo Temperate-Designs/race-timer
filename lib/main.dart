@@ -219,7 +219,9 @@ class _RaceTimerWidgetState extends State<RaceTimerWidget> {
           _currentOrientation = orientation;
           _loadAd();
         }
-        return Container();
+        return Container(
+          height: 60,
+        );
       },
     );
   }
