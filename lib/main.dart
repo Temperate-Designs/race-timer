@@ -322,10 +322,9 @@ class _RaceTimerWidgetState extends AdMobState<RaceTimerWidget> {
         body: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
+            _getAdWidget(),
             titleWidget,
             pastRacesWidget(raceData),
-            const Spacer(),
-            _getAdWidget(),
           ],
         ));
   }
@@ -397,10 +396,9 @@ class _ShowRaceWidgetState extends AdMobState<ShowRaceWidget> {
       ),
       body: Column(
         children: [
+          _getAdWidget(),
           titleWidget(race.title),
           raceDetailsWidget(race),
-          const Spacer(),
-          _getAdWidget(),
         ],
       ),
     );
