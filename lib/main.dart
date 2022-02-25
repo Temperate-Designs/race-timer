@@ -102,52 +102,23 @@ void main() {
   runApp(RaceTimerApp());
 }
 
-class RaceTimerApp extends MaterialApp {
-  RaceTimerApp({Key? key})
-      : super(
-          key: key,
-          title: "Southwest Nordic Race Timer",
-          theme: ThemeData(
-            primarySwatch: Colors.orange,
-            visualDensity: VisualDensity.adaptivePlatformDensity,
-          ),
-          onGenerateRoute: (RouteSettings settings) {
-            if (settings.name == ShowRaceWidget.routeName) {
-              final race = settings.arguments as Race;
-              return MaterialPageRoute(
-                  builder: (context) => ShowRaceWidget(race: race));
-            }
-            return null;
-          },
-          home: const RaceTimerWidget(),
-        );
-}
-
-class RaceTimerWidget extends StatefulWidget {
-  const RaceTimerWidget({Key? key}) : super(key: key);
-
-  @override
-  _RaceTimerWidgetState createState() => _RaceTimerWidgetState();
-}
-
-class _RaceTimerWidgetState extends State<RaceTimerWidget> {
+abstract class AdMobState<T extends StatefulWidget> extends State<T> {
   BannerAd? _anchoredAdaptiveAd;
   bool _isLoaded = false;
   late Orientation _currentOrientation;
 
-  RaceData raceData = RaceData();
+  @override
+  void dispose() {
+    log('Disposing of ad');
+    super.dispose();
+    _anchoredAdaptiveAd?.dispose();
+  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _currentOrientation = MediaQuery.of(context).orientation;
     _loadAd();
-  }
-
-  Future<String> _getPackageInfo() async {
-    final info = await PackageInfo.fromPlatform();
-    String version = '${info.version}+${info.buildNumber}';
-    return version;
   }
 
   Future<void> _loadAd() async {
@@ -227,6 +198,44 @@ class _RaceTimerWidgetState extends State<RaceTimerWidget> {
         );
       },
     );
+  }
+}
+
+class RaceTimerApp extends MaterialApp {
+  RaceTimerApp({Key? key})
+      : super(
+          key: key,
+          title: "Southwest Nordic Race Timer",
+          theme: ThemeData(
+            primarySwatch: Colors.orange,
+            visualDensity: VisualDensity.adaptivePlatformDensity,
+          ),
+          onGenerateRoute: (RouteSettings settings) {
+            if (settings.name == ShowRaceWidget.routeName) {
+              final race = settings.arguments as Race;
+              return MaterialPageRoute(
+                  builder: (context) => ShowRaceWidget(race: race));
+            }
+            return null;
+          },
+          home: const RaceTimerWidget(),
+        );
+}
+
+class RaceTimerWidget extends StatefulWidget {
+  const RaceTimerWidget({Key? key}) : super(key: key);
+
+  @override
+  _RaceTimerWidgetState createState() => _RaceTimerWidgetState();
+}
+
+class _RaceTimerWidgetState extends AdMobState<RaceTimerWidget> {
+  RaceData raceData = RaceData();
+
+  Future<String> _getPackageInfo() async {
+    final info = await PackageInfo.fromPlatform();
+    String version = '${info.version}+${info.buildNumber}';
+    return version;
   }
 
   Widget titleWidget = const Padding(
@@ -320,12 +329,6 @@ class _RaceTimerWidgetState extends State<RaceTimerWidget> {
           ],
         ));
   }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _anchoredAdaptiveAd?.dispose();
-  }
 }
 
 class ShowRaceWidget extends StatefulWidget {
@@ -338,97 +341,10 @@ class ShowRaceWidget extends StatefulWidget {
   _ShowRaceWidgetState createState() => _ShowRaceWidgetState(race: race);
 }
 
-class _ShowRaceWidgetState extends State<ShowRaceWidget> {
+class _ShowRaceWidgetState extends AdMobState<ShowRaceWidget> {
   final Race race;
-  BannerAd? _anchoredAdaptiveAd;
-  bool _isLoaded = false;
-  late Orientation _currentOrientation;
 
   _ShowRaceWidgetState({required this.race});
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _currentOrientation = MediaQuery.of(context).orientation;
-    _loadAd();
-  }
-
-  Future<void> _loadAd() async {
-    log('Loading new Ad');
-
-    await _anchoredAdaptiveAd?.dispose();
-    setState(() {
-      _anchoredAdaptiveAd = null;
-      _isLoaded = false;
-    });
-
-    final AnchoredAdaptiveBannerAdSize? size =
-        await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
-            MediaQuery.of(context).size.width.truncate());
-
-    if (size == null) {
-      log('Unable to get height of anchored banner');
-      return;
-    }
-
-    _anchoredAdaptiveAd = BannerAd(
-      adUnitId: Platform.isAndroid
-          ? (kDebugMode
-              ? 'ca-app-pub-3940256099942544/6300978111'
-              : 'ca-app-pub-4328959315579213/8369004752')
-          : 'ca-app-pub-3940256099942544/2934735716',
-      size: size,
-      request: const AdRequest(),
-      listener: BannerAdListener(
-        onAdLoaded: (Ad ad) {
-          log('$ad loaded: ${ad.responseInfo}');
-          setState(() {
-            // When the ad is loaded, get the ad size and use it to set
-            // the height of the ad container.
-            _anchoredAdaptiveAd = ad as BannerAd;
-            _isLoaded = true;
-          });
-        },
-        onAdClicked: (ad) => log('$ad clicked'),
-        onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          log('Ad failedToLoad: $error');
-          ad.dispose();
-        },
-      ),
-    );
-    return _anchoredAdaptiveAd!.load();
-  }
-
-  /// Gets a widget containing the ad, if one is loaded.
-  ///
-  /// Returns an empty container if no ad is loaded, or the orientation
-  /// has changed. Also loads a new ad if the orientation changes.
-  Widget _getAdWidget() {
-    log('Getting Ad widget');
-    return OrientationBuilder(
-      builder: (context, orientation) {
-        log('Checking if orientation has changed');
-        if (_currentOrientation == orientation &&
-            _anchoredAdaptiveAd != null &&
-            _isLoaded) {
-          log('Same orientation');
-          return Container(
-            color: Colors.orange,
-            width: _anchoredAdaptiveAd!.size.width.toDouble(),
-            height: _anchoredAdaptiveAd!.size.height.toDouble(),
-            child: AdWidget(ad: _anchoredAdaptiveAd!),
-          );
-        }
-        // Reload the ad if the orientation changes.
-        if (_currentOrientation != orientation) {
-          log('Orientation has changed, reloading ad...');
-          _currentOrientation = orientation;
-          _loadAd();
-        }
-        return Container();
-      },
-    );
-  }
 
   Widget titleWidget(String name) => Padding(
         padding: const EdgeInsets.all(8.0),
