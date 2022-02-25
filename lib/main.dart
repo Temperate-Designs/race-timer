@@ -392,7 +392,7 @@ class _ShowRaceWidgetState extends AdMobState<ShowRaceWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Southwest Nordic Race Timer'),
+        title: appTitleWidget,
       ),
       body: Column(
         children: [
