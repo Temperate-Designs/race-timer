@@ -205,7 +205,7 @@ class RaceTimerApp extends MaterialApp {
   RaceTimerApp({Key? key})
       : super(
           key: key,
-          title: "Southwest Nordic Race Timer",
+          title: appTitleString,
           theme: ThemeData(
             primarySwatch: Colors.orange,
             visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -296,7 +296,7 @@ class _RaceTimerWidgetState extends AdMobState<RaceTimerWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Southwest Nordic Race Timer'),
+          title: appTitleWidget,
         ),
         drawer: Drawer(
           child: ListView(
