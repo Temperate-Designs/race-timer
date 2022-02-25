@@ -8,6 +8,9 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/intl.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+const String appTitleString = "Southwest Nordic Race Timer";
+const Text appTitleWidget = Text(appTitleString);
+
 class Race {
   String title;
   String description;
