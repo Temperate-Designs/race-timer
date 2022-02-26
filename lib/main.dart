@@ -23,6 +23,12 @@ class Race {
     DateTime? date,
     this.racers = const [],
   }) : date = date ?? DateTime.now();
+
+  @override
+  String toString() {
+    return 'Race: $title ($description) with ${racers.length} racer' +
+        (racers.length != 1 ? 's' : '');
+  }
 }
 
 class Racer {
@@ -39,6 +45,11 @@ class Racer {
   })  : startTime = startTime ?? DateTime.now(),
         finishTime =
             finishTime ?? DateTime.now().add(const Duration(minutes: 5));
+
+  @override
+  String toString() {
+    return 'Racer: $name ($bibNumber)';
+  }
 }
 
 class RaceData {
