@@ -231,7 +231,7 @@ class RaceTimerApp extends MaterialApp {
                 }
               case NewRaceWidget.routeName:
                 {
-                  return MaterialPageRoute(
+                  return MaterialPageRoute<Race>(
                       builder: (context) => const NewRaceWidget());
                 }
               default:
@@ -315,6 +315,18 @@ class _RaceTimerWidgetState extends AdMobState<RaceTimerWidget> {
             }),
       );
 
+  void _navigateToNewRace(BuildContext context) async {
+    log('Going to new-race page');
+    final Race? result =
+        await Navigator.pushNamed<Race?>(context, NewRaceWidget.routeName);
+    if (result != null) {
+      log('new race = $result');
+      raceData._races.add(result);
+    } else {
+      log('No new race');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -323,8 +335,7 @@ class _RaceTimerWidgetState extends AdMobState<RaceTimerWidget> {
         ),
         persistentFooterButtons: [
           TextButton.icon(
-            onPressed: () =>
-                Navigator.pushNamed(context, NewRaceWidget.routeName),
+            onPressed: () => _navigateToNewRace(context),
             icon: const Icon(Icons.add),
             label: const Text('New Race'),
           ),
@@ -445,6 +456,64 @@ class NewRaceWidget extends StatefulWidget {
 }
 
 class _NewRaceState extends AdMobState<NewRaceWidget> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  Race newRace = Race();
+
+  Widget titleWidget = const Padding(
+    padding: EdgeInsets.all(8.0),
+    child: Text(
+      'New Race',
+      style: TextStyle(fontSize: 20.0),
+    ),
+  );
+
+  Widget raceFormWidget() {
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          TextFormField(
+            decoration: const InputDecoration(hintText: "Enter Race Title"),
+            validator: (String? value) {
+              if (value == null || value.isEmpty) {
+                return "Please enter a title";
+              }
+              return null;
+            },
+            onSaved: (String? value) {
+              newRace.title = value!;
+            },
+          ),
+          TextFormField(
+            decoration: const InputDecoration(hintText: "Enter Race Description"),
+            validator: (String? value) {
+              if (value == null || value.isEmpty) {
+                return "Please enter a description";
+              }
+              return null;
+            },
+            onSaved: (String? value) {
+              newRace.title = value!;
+            },
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            child: ElevatedButton(
+              onPressed: () {
+                if (_formKey.currentState!.validate()) {
+                  _formKey.currentState!.save();
+                  Navigator.pop(context, newRace);
+                }
+              },
+              child: const Text("Submit"),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -452,7 +521,11 @@ class _NewRaceState extends AdMobState<NewRaceWidget> {
         title: appTitleWidget,
       ),
       body: Column(
-        children: [_getAdWidget()],
+        children: [
+          _getAdWidget(),
+          titleWidget,
+          raceFormWidget(),
+        ],
       ),
     );
   }
