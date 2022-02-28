@@ -500,7 +500,8 @@ class _NewRaceState extends AdMobState<NewRaceWidget> {
             },
           ),
           TextFormField(
-            decoration: const InputDecoration(hintText: "Enter Race Description"),
+            decoration:
+                const InputDecoration(hintText: "Enter Race Description"),
             validator: (String? value) {
               if (value == null || value.isEmpty) {
                 return "Please enter a description";
@@ -508,7 +509,7 @@ class _NewRaceState extends AdMobState<NewRaceWidget> {
               return null;
             },
             onSaved: (String? value) {
-              newRace.title = value!;
+              newRace.description = value!;
             },
           ),
           Row(
@@ -530,7 +531,7 @@ class _NewRaceState extends AdMobState<NewRaceWidget> {
                   Navigator.pop(context, newRace);
                 }
               },
-              child: const Text("Submit"),
+              child: const Text("Create Race"),
             ),
           )
         ],
