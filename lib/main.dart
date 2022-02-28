@@ -54,7 +54,7 @@ class Racer {
 
 class RaceData {
   final List<Race> _races = [];
-  DateFormat dateformat = DateFormat.yMd();
+  static final DateFormat dateFormat = DateFormat.yMd();
 
   RaceData() {
     if (kDebugMode) {
@@ -288,7 +288,7 @@ class _RaceTimerWidgetState extends AdMobState<RaceTimerWidget> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(raceData.races[index].title),
-                              Text(raceData.dateformat
+                              Text(RaceData.dateFormat
                                   .format(raceData.races[index].date)),
                             ],
                           ),
@@ -467,6 +467,20 @@ class _NewRaceState extends AdMobState<NewRaceWidget> {
     ),
   );
 
+  Future<void> _showDatePicker(BuildContext context) async {
+    final result = await showDatePicker(
+      context: context,
+      initialDate: newRace.date,
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+    if (result != null && result != newRace.date) {
+      setState(() {
+        newRace.date = result;
+      });
+    }
+  }
+
   Widget raceFormWidget() {
     return Form(
       key: _formKey,
@@ -496,6 +510,16 @@ class _NewRaceState extends AdMobState<NewRaceWidget> {
             onSaved: (String? value) {
               newRace.title = value!;
             },
+          ),
+          Row(
+            children: [
+              Text('Date: ${RaceData.dateFormat.format(newRace.date)}'),
+              const Spacer(),
+              ElevatedButton(
+                onPressed: () => _showDatePicker(context),
+                child: const Text('Pick Race Date'),
+              ),
+            ],
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
