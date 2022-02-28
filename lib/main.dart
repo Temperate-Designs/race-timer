@@ -105,6 +105,10 @@ class RaceData {
   void add(Race newRace) {
     _races.add(newRace);
   }
+
+  void delete(int index) {
+    _races.removeAt(index);
+  }
 }
 
 void main() {
@@ -226,7 +230,7 @@ class RaceTimerApp extends MaterialApp {
               case ShowRaceWidget.routeName:
                 {
                   final race = settings.arguments as Race;
-                  return MaterialPageRoute(
+                  return MaterialPageRoute<bool>(
                       builder: (context) => ShowRaceWidget(race: race));
                 }
               case NewRaceWidget.routeName:
@@ -273,9 +277,17 @@ class _RaceTimerWidgetState extends AdMobState<RaceTimerWidget> {
             itemCount: raceData.races.length,
             itemBuilder: (context, index) {
               return InkWell(
-                onTap: () => Navigator.pushNamed(
-                    context, ShowRaceWidget.routeName,
-                    arguments: raceData.races[index]),
+                onTap: () async {
+                  bool? raceAction = await Navigator.pushNamed<bool>(
+                      context, ShowRaceWidget.routeName,
+                      arguments: raceData.races[index]);
+                  if (raceAction != null && raceAction) {
+                    log('Deleting race ${raceData.races[index]}');
+                    setState(() {
+                      raceData.delete(index);
+                    });
+                  }
+                },
                 child: Column(
                   children: [
                     const SizedBox(height: 8.0),
@@ -430,12 +442,53 @@ class _ShowRaceWidgetState extends AdMobState<ShowRaceWidget> {
             }),
       );
 
+  Future<bool> _areYouSureDelete(BuildContext context) async {
+    bool? result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Race'),
+        content: const Text('Are you sure you want to delete this race?'),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop(true);
+            },
+            child: const Text('Yes, delete'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop(false);
+            },
+            child: const Text('No, cancel'),
+          )
+        ],
+      ),
+    );
+    if (result == null) {
+      throw Exception('Result is null for some reason');
+    }
+    return result;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: appTitleWidget,
       ),
+      persistentFooterButtons: [
+        TextButton.icon(
+          onPressed: () async {
+            bool result = await _areYouSureDelete(context);
+            if (result) {
+              log('Deleting race');
+              Navigator.pop(context, true);
+            }
+          },
+          icon: const Icon(Icons.delete),
+          label: const Text('Delete Race'),
+        ),
+      ],
       body: Column(
         children: [
           _getAdWidget(),
